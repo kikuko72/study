@@ -1,0 +1,31 @@
+package kikuko72.app.service;
+
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import kikuko72.app.logic.util.BytesTranslator;
+import kikuko72.app.main.EntryPoint;
+
+
+public class Delegate {
+	private InetAddress nextDns;
+
+	public Delegate(byte[] ipAddress) throws UnknownHostException {
+		nextDns = InetAddress.getByAddress(ipAddress);
+	}
+
+	public DatagramPacket resolve(DatagramPacket request) throws IOException {
+		byte[] query = request.getData();
+
+		DatagramSocket querySocket = new DatagramSocket();
+		querySocket.send(new DatagramPacket(query,query.length, nextDns, EntryPoint.DNS_PORT_NUMBER));
+		DatagramPacket packet = new DatagramPacket(new byte[512], 512);
+		querySocket.receive(packet);
+		querySocket.close();
+		byte[] answer = BytesTranslator.trim(packet.getData());
+		return new DatagramPacket(answer, answer.length, request.getSocketAddress());
+	}
+}
