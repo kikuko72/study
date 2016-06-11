@@ -9,7 +9,7 @@ import kikuko72.app.service.Delegate;
 import kikuko72.app.service.Resolver;
 
 
-public class EntryPoint {
+public class DNSInjector {
 	public static final int DNS_PORT_NUMBER = 53;
 	public static final int DNS_UDP_MAX_BYTES = 512;
 

@@ -7,7 +7,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import kikuko72.app.logic.util.BytesTranslator;
-import kikuko72.app.main.EntryPoint;
+import kikuko72.app.main.DNSInjector;
 
 
 public class Delegate {
@@ -21,7 +21,7 @@ public class Delegate {
 		byte[] query = request.getData();
 
 		DatagramSocket querySocket = new DatagramSocket();
-		querySocket.send(new DatagramPacket(query,query.length, nextDns, EntryPoint.DNS_PORT_NUMBER));
+		querySocket.send(new DatagramPacket(query,query.length, nextDns, DNSInjector.DNS_PORT_NUMBER));
 		DatagramPacket packet = new DatagramPacket(new byte[512], 512);
 		querySocket.receive(packet);
 		querySocket.close();
