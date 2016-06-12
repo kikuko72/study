@@ -5,7 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-import kikuko72.app.logic.message.model.DNSMessage;
+import kikuko72.app.model.message.DNSMessage;
 import kikuko72.app.service.Delegate;
 import kikuko72.app.service.Resolver;
 

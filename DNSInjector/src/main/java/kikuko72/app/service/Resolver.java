@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.SocketAddress;
 
-import kikuko72.app.logic.message.model.DNSMessage;
+import kikuko72.app.model.message.DNSMessage;
 import kikuko72.app.logic.util.BytesTranslator;
 
 
