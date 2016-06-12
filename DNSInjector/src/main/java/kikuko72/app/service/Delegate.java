@@ -11,7 +11,7 @@ import kikuko72.app.main.DNSInjector;
 import kikuko72.app.model.message.DNSMessage;
 
 
-public class Delegate {
+public class Delegate implements  Resolver {
 	private InetAddress nextDns;
 
 	public Delegate(byte[] ipAddress) throws UnknownHostException {
