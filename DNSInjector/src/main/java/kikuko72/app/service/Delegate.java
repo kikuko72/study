@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
 
 import kikuko72.app.logic.util.BytesTranslator;
 import kikuko72.app.main.DNSInjector;
+import kikuko72.app.model.message.DNSMessage;
 
 
 public class Delegate {
@@ -17,8 +18,8 @@ public class Delegate {
 		nextDns = InetAddress.getByAddress(ipAddress);
 	}
 
-	public DatagramPacket resolve(DatagramPacket request) throws IOException {
-		byte[] query = request.getData();
+	public DNSMessage resolve(DNSMessage request) throws IOException {
+		byte[] query = request.bytes();
 
 		DatagramSocket querySocket = new DatagramSocket();
 		querySocket.send(new DatagramPacket(query,query.length, nextDns, DNSInjector.DNS_PORT_NUMBER));
@@ -26,6 +27,6 @@ public class Delegate {
 		querySocket.receive(packet);
 		querySocket.close();
 		byte[] answer = BytesTranslator.trim(packet.getData());
-		return new DatagramPacket(answer, answer.length, request.getSocketAddress());
+		return new DNSMessage(packet.getData());
 	}
 }
