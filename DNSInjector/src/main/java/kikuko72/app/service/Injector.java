@@ -8,7 +8,7 @@ import kikuko72.app.model.message.DNSMessage;
 import kikuko72.app.logic.util.BytesTranslator;
 
 
-public class Resolver {
+public class Injector {
 	public static DatagramPacket resolve(DatagramPacket request) throws IOException {
 		DNSMessage requestMessage = new DNSMessage(request.getData());
 		DNSMessage ansMes = requestMessage.createAnswerMessage();
