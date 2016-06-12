@@ -1,11 +1,9 @@
 package kikuko72.app.service;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.SocketAddress;
-
-import kikuko72.app.model.message.DNSMessage;
 import kikuko72.app.logic.util.BytesTranslator;
+import kikuko72.app.model.message.DNSMessage;
+
+import java.io.IOException;
 
 
 public class Injector implements  Resolver{

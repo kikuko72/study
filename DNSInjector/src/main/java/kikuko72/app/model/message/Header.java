@@ -5,7 +5,7 @@ import java.util.Arrays;
 class Header {
 	static final int HEADER_LENGTH = 12;
 	static final int FLAG_OFFSET = 2;
-	private static final byte[] SYNGLE_ANSWER = new byte[] {0, 1};
+	private static final byte[] SINGLE_ANSWER = new byte[] {0, 1};
 
 	private final byte[] id; // 16bit
 	private final Flag flag; // 16bit
@@ -26,7 +26,7 @@ class Header {
 	Header createAnswerHeader() {
 		byte[] ret = this.bytes();
 		System.arraycopy(flag.createAnswerFlag().bytes(), 0, ret, FLAG_OFFSET, Flag.LENGTH);
-		System.arraycopy(                  SYNGLE_ANSWER, 0, ret,           6,           2);
+		System.arraycopy(SINGLE_ANSWER, 0, ret,           6,           2);
 		return new Header(ret);
 	}
 

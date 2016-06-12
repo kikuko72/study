@@ -16,7 +16,7 @@ public class Body {
 	Body(byte[] input) {
 		value = input;
 		query = new Query(input);
-		List<ResourceRecord> records = new ArrayList();
+		List<ResourceRecord> records = new ArrayList<ResourceRecord>();
 		for (int i = query.length(); i < input.length;) {
 			ResourceRecord record = new ResourceRecord(Arrays.copyOfRange(input, i, input.length));
 			records.add(record);
@@ -33,7 +33,7 @@ public class Body {
 		return this.query.getDomainName();
 	}
 
-	List<ResourceRecord> getResourcrRecords() {
+	List<ResourceRecord> getResourceRecords() {
 		return records;
 	}
 

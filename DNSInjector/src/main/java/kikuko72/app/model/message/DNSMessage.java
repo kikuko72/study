@@ -28,7 +28,7 @@ public class DNSMessage {
 	}
 
 	public List<ResourceRecord> getAllResourceRecords() {
-		return body.getResourcrRecords();
+		return body.getResourceRecords();
 	}
 
 	public byte[] bytes() {

@@ -16,9 +16,6 @@ public enum RecordType {
     }
 
     public boolean isMatch(byte[] target) {
-        if (target.length != 2) {
-            return false;
-        }
-        return bytes[0] == target[0] && bytes[1] == target[1];
+        return target.length == 2 && bytes[0] == target[0] && bytes[1] == target[1];
     }
 }
