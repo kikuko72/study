@@ -24,10 +24,10 @@ public class Body {
 	}
 
 	Body createAnswerBody() {
-		byte[] ret = new byte[value.length];
 		ResourceRecord localhostRecord = new ResourceRecord(new byte[]{127, 0, 0, 1});
 		int answerOffset = this.query.bytes().length;
 		byte[] localhostAnswer = localhostRecord.bytes();
+		byte[] ret = new byte[value.length + 2 + localhostAnswer.length];
 		System.arraycopy(               value, 0, ret,                 0,           answerOffset);
 		System.arraycopy(DOMAIN_REPEAT_OFFSET, 0, ret,      answerOffset,                      2);
 		System.arraycopy(     localhostAnswer, 0, ret,  answerOffset + 2, localhostAnswer.length);
