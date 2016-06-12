@@ -1,6 +1,9 @@
 package kikuko72.app.model.message;
 
+import kikuko72.app.model.record.ResourceRecord;
+
 import java.util.Arrays;
+import java.util.List;
 
 public class DNSMessage {
 	private Header header;
@@ -22,6 +25,10 @@ public class DNSMessage {
 
 	public String getDomainName() {
 		return this.body.getDomainName();
+	}
+
+	public List<ResourceRecord> getAllResourceRecords() {
+		return body.getResourcrRecords();
 	}
 
 	public byte[] bytes() {

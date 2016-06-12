@@ -9,9 +9,8 @@ public class BytesTranslator {
 	private static final short SINGLE_BYTE_AND_MASK = 0xFF;
 
 	public static int unSign(byte bits) {
-		short ret = (short)bits;
 		// bitsが負数の時用に下位8bitだけ抽出する
-		return (ret & SINGLE_BYTE_AND_MASK);
+		return (bits & SINGLE_BYTE_AND_MASK);
 	}
 
 	public static byte[] trim(byte[] target) {
