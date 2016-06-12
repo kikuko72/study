@@ -1,5 +1,6 @@
 package kikuko72.app.model.message;
 
+import kikuko72.app.logic.util.BytesTranslator;
 import kikuko72.app.model.record.ResourceRecord;
 
 import java.util.Arrays;
@@ -10,8 +11,9 @@ public class DNSMessage {
 	private Body body;
 
 	public DNSMessage(byte[] input) {
-		header = new Header(Arrays.copyOf     (input, Header.HEADER_LENGTH));
-		body =   new Body  (Arrays.copyOfRange(input, Header.HEADER_LENGTH, input.length));
+        byte[] trimedInput = BytesTranslator.trim(input);
+		header = new Header(Arrays.copyOf     (trimedInput, Header.HEADER_LENGTH));
+		body =   new Body  (Arrays.copyOfRange(trimedInput, Header.HEADER_LENGTH, trimedInput.length));
 	}
 
 	public DNSMessage createAnswerMessage() {
