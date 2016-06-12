@@ -31,22 +31,15 @@ public class RecordName {
         int pos = 0;
         int labelLength;
         List<String> labels = new ArrayList<String>();
-        do {
-            labelLength = input[pos];
-            if (labelLength > 0) {
-                pos++; // ラベルの長さ1バイトの次からラベル開始
-            }
+        while ((labelLength = input[pos]) != 0) {
+            pos++; // ラベルの長さ1バイトの次からラベル開始
             StringBuilder label = new StringBuilder();
             for (int i = pos; i < pos + labelLength; i++) {
                 label.append((char)input[i]);
             }
-            try {
-                labels.add(label.toString());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            labels.add(label.toString());
             pos += labelLength;
-        } while (labelLength != 0);
+        }
         return new RecordName(labels, Arrays.copyOf(input, pos + 1));
     }
 
