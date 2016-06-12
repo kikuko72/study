@@ -38,7 +38,7 @@ public class RecordName {
             }
             StringBuilder label = new StringBuilder();
             for (int i = pos; i < pos + labelLength; i++) {
-                label.append(input[i]);
+                label.append((char)input[i]);
             }
             try {
                 labels.add(label.toString());

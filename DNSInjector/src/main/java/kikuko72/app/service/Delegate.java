@@ -6,6 +6,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import kikuko72.app.logic.util.BytesTranslator;
 import kikuko72.app.model.message.DNSMessage;
 
 
@@ -22,6 +23,6 @@ public class Delegate implements  Resolver {
 		DatagramPacket answer = DNS.createReceivePacket();
 		querySocket.receive(answer);
 		querySocket.close();
-		return new DNSMessage(answer.getData());
+		return new DNSMessage(BytesTranslator.trim(answer.getData()));
 	}
 }
