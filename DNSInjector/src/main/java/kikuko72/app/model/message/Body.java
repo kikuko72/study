@@ -1,4 +1,6 @@
-package kikuko72.app.logic.message.model;
+package kikuko72.app.model.message;
+
+import kikuko72.app.model.record.ResourceRecord;
 
 import java.util.Arrays;
 

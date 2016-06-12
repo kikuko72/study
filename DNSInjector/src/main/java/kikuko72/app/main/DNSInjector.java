@@ -3,15 +3,18 @@ package kikuko72.app.main;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 
-import kikuko72.app.logic.message.model.DNSMessage;
+import kikuko72.app.logic.util.BytesTranslator;
+import kikuko72.app.model.message.DNSMessage;
 import kikuko72.app.service.Delegate;
-import kikuko72.app.service.Resolver;
+import kikuko72.app.service.Injector;
 
 
 public class DNSInjector {
 	public static final int DNS_PORT_NUMBER = 53;
 	public static final int DNS_UDP_MAX_BYTES = 512;
+    public static final String DELEGATE_HOST_KEY = "delegate";
 
 	public static void main(String[] args) throws IOException {
 		while (true) {
@@ -21,15 +24,20 @@ public class DNSInjector {
 			serviceSocket.receive(request);
 			DNSMessage message = new DNSMessage(request.getData());
 			String dn = message.getDomainName();
-			DatagramPacket responce;
+			DNSMessage responce;
 			if ("hoge".equals(dn)) {
-				responce = Resolver.resolve(request);
+                Injector injector = new Injector();
+				responce = injector.resolve(message);
 			} else {
-				// 委譲するDNSサーバーを指定
-				Delegate delegate = new Delegate(new byte[]{(byte)127, (byte)0, (byte)0, (byte)1});
-				responce = delegate.resolve(request);
+                // 委譲するDNSサーバーを指定
+                String delegateHost = System.getProperty(DELEGATE_HOST_KEY);
+                InetAddress delegateHostAddress = InetAddress.getByName(delegateHost);
+				Delegate delegate = new Delegate(delegateHostAddress.getAddress());
+				responce = delegate.resolve(message);
 			}
-			serviceSocket.send(responce);
+            byte[] answer = BytesTranslator.trim(responce.bytes());
+            DatagramPacket responsePacket = new DatagramPacket(answer, answer.length, request.getSocketAddress());
+			serviceSocket.send(responsePacket);
 			serviceSocket.close();
 		}
 	}
