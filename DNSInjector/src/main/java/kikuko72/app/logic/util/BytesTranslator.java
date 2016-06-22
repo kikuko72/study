@@ -3,7 +3,7 @@ package kikuko72.app.logic.util;
 import java.util.Arrays;
 
 /**
- * javaのbyteは符号付でややこしいためshortに直す
+ * javaのbyteは符号付でややこしいためintに直す
  */
 public class BytesTranslator {
 	private static final short SINGLE_BYTE_AND_MASK = 0xFF;
