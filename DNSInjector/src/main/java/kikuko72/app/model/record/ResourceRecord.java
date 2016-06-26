@@ -1,6 +1,7 @@
 package kikuko72.app.model.record;
 
 import kikuko72.app.logic.util.BytesTranslator;
+import kikuko72.app.model.record.name.RecordName;
 
 import java.util.Arrays;
 

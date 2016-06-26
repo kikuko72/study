@@ -5,7 +5,7 @@ package kikuko72.app.model.record;
  */
 public enum RecordClass {
     INTERNET(new byte[]{0x0, 0x1});
-    private byte[] bytes;
+    private final byte[] bytes;
 
     RecordClass(byte[] bytes) {
         this.bytes = bytes;

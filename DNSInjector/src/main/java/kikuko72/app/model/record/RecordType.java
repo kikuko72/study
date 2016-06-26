@@ -5,7 +5,7 @@ package kikuko72.app.model.record;
  */
 public enum RecordType {
     A_RECORD(new byte[]{0x0, 0x1});
-    private byte[] bytes;
+    private final byte[] bytes;
 
     RecordType(byte[] bytes) {
         this.bytes = bytes;

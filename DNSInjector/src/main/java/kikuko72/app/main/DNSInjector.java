@@ -13,7 +13,7 @@ import kikuko72.app.service.Injector;
 
 
 public class DNSInjector {
-    public static final String DELEGATE_HOST_KEY = "delegate";
+    private static final String DELEGATE_HOST_KEY = "delegate";
 
 	public static void main(String[] args) throws IOException {
 		while (true) {
@@ -27,9 +27,9 @@ public class DNSInjector {
         DatagramPacket request = DNS.createReceivePacket();
         serviceSocket.receive(request);
         DNSMessage message = new DNSMessage(request.getData());
-        String dn = message.getDomainName();
+        String dn = message.getQueryDomainName();
         DNSMessage response;
-        if ("hoge".equals(dn)) {
+        if ("hoge.".equals(dn)) {
             Injector injector = new Injector();
             response = injector.resolve(message);
         } else {

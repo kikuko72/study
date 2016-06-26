@@ -5,14 +5,14 @@ import java.util.Arrays;
 import kikuko72.app.logic.util.BytesTranslator;
 
 
-public class Flag {
-	private static final short RESPONSE_FLAG_QR = 0x80;
-	private static final short RESPONSE_FLAG_AA = 0x4;
-	private static final short RESPONSE_FLAG_TC = 0x2;
-	private static final short RESPONSE_FLAG_RA = 0x80;
+ class Flag {
+	private static final int RESPONSE_FLAG_QR = 0x80;
+	private static final int RESPONSE_FLAG_AA = 0x4;
+	private static final int RESPONSE_FLAG_TC = 0x2;
+	private static final int RESPONSE_FLAG_RA = 0x80;
 
 	static final int LENGTH = 2; // 16bit
-	private byte[] value;
+	private final byte[] value;
 
 	Flag(byte[] value) {
 		if (value.length == Flag.LENGTH) {
