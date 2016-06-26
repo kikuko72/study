@@ -51,16 +51,15 @@ public class RecordName {
 
     public byte[] bytes() {
         ByteBuffer buffer = ByteBuffer.allocate(length());
-        for(int i = 0; i < labels.size(); i++) {
-            buffer.put(labels.get(i).bytes());
+        for(LabelUnit label : labels) {
+            buffer.put(label.bytes());
         }
         return buffer.array();
     }
 
     private String joinDomainName(List<LabelUnit> labels) {
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < labels.size(); i++) {
-            LabelUnit label = labels.get(i);
+        for (LabelUnit label : labels) {
             builder.append(label).append(label.hasNextLabel() ? "." : "");
         }
         return builder.toString();

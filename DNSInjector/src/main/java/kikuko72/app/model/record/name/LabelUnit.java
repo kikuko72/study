@@ -83,8 +83,8 @@ class LabelUnit {
             return "参照：" + getReferenceOffset() + "バイト目";
         }
         StringBuilder builder = new StringBuilder(tail.length);
-        for(int i = 0; i < tail.length; i++) {
-            builder.append((char)tail[i]);
+        for (byte aTail : tail) {
+            builder.append((char) aTail);
         }
         return builder.toString();
     }
