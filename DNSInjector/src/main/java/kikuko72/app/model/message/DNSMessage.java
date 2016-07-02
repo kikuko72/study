@@ -1,5 +1,6 @@
 package kikuko72.app.model.message;
 
+import kikuko72.app.model.record.RecordType;
 import kikuko72.app.model.record.ResourceRecord;
 
 import java.util.ArrayList;
@@ -12,12 +13,12 @@ import java.util.List;
  */
 public class DNSMessage {
 	private final Header header;
-	private final Query query;
+	private final List<Query> queries;
 	private final List<ResourceRecord> records;
 
-	public DNSMessage(Header header, Query query, List<ResourceRecord> records) {
+	public DNSMessage(Header header, List<Query> queries, List<ResourceRecord> records) {
 		this.header = header;
-		this.query = query;
+		this.queries = queries;
 		this.records = records;
 	}
 
@@ -29,27 +30,33 @@ public class DNSMessage {
      */
     public static DNSMessage scan(byte[] input) {
         Header header = Header.scan(input);
-        Query query   =  Query.scan(input, Header.DEFINITE_LENGTH);
 
-        int cursor = Header.DEFINITE_LENGTH + query.length();
+        int cursor = Header.DEFINITE_LENGTH;
+        List<Query> queries = new ArrayList<Query>();
+        for (int i = 0; i < header.getQdCount(); i++) {
+            Query query   =  Query.scan(input, cursor);
+            queries.add(query);
+            cursor += query.length();
+        }
+
         List<ResourceRecord> records = new ArrayList<ResourceRecord>();
         for (int i = 0; i < header.getAnCount() + header.getNsCount() + header.getArCount(); i++) {
             ResourceRecord record = ResourceRecord.scan(input, cursor);
             records.add(record);
             cursor += record.length();
         }
-        return new DNSMessage(header, query, records);
+        return new DNSMessage(header, queries, records);
     }
 
 	public DNSMessage createAnswerMessage(ResourceRecord... records) {
 		return new DNSMessage(header.createAnswerHeader(records.length),
-				              query,
+				              queries,
                               Arrays.asList(records)
 		);
 	}
 
 	public String getQueryDomainName() {
-		return this.query.getDomainName();
+		return this.queries.get(0).getDomainName();
 	}
 
 	public List<ResourceRecord> getAllResourceRecords() {
@@ -58,7 +65,7 @@ public class DNSMessage {
 
 	public byte[] bytes() {
 		byte[] headerBytes = header.bytes();
-		byte[] queryBytes = query.bytes();
+		byte[] queryBytes = queriesToBytes(queries);
 		byte[] recordsBytes = recordsToBytes(records);
 		byte[] ret = new byte[Header.DEFINITE_LENGTH + queryBytes.length + recordsBytes.length];
 		System.arraycopy( headerBytes, 0, ret,                                        0, Header.DEFINITE_LENGTH);
@@ -68,16 +75,30 @@ public class DNSMessage {
 	}
 
 	private byte[] recordsToBytes(List<ResourceRecord> records) {
-		List<Byte> binary = new ArrayList<Byte>();
-		for(ResourceRecord record :records) {
-			for(byte b : record.bytes()) {
-				binary.add(b);
-			}
-		}
-		byte[] ret = new byte[binary.size()];
-		for(int i = 0; i < ret.length; i++) {
-			ret[i] = binary.get(i);
-		}
-		return ret;
-	}
+        List<Byte> binary = new ArrayList<Byte>();
+        for(ResourceRecord record :records) {
+            for(byte b : record.bytes()) {
+                binary.add(b);
+            }
+        }
+        byte[] ret = new byte[binary.size()];
+        for(int i = 0; i < ret.length; i++) {
+            ret[i] = binary.get(i);
+        }
+        return ret;
+    }
+
+    private byte[] queriesToBytes(List<Query> queries) {
+        List<Byte> binary = new ArrayList<Byte>();
+        for(Query query :queries) {
+            for(byte b : query.bytes()) {
+                binary.add(b);
+            }
+        }
+        byte[] ret = new byte[binary.size()];
+        for(int i = 0; i < ret.length; i++) {
+            ret[i] = binary.get(i);
+        }
+        return ret;
+    }
 }
