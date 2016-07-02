@@ -1,43 +1,66 @@
 package kikuko72.app.model.message;
 
+import kikuko72.app.logic.util.BytesTranslator;
+
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
+/**
+ * DNSメッセージのヘッダ部を表すクラスです。
+ * このクラスは不変クラスとしてデザインされています。
+ */
 class Header {
-	static final int HEADER_LENGTH = 12;
-	static final int FLAG_OFFSET = 2;
-	private static final byte[] SINGLE_ANSWER = new byte[] {0, 1};
+	static final int DEFINITE_LENGTH = 12;
 
-	private final byte[] id; // 16bit
+	private final int id; // 16bit
 	private final Flag flag; // 16bit
-	private final byte[] qdCount; // 16bit
-	private final byte[] anCount; // 16bit
-	private final byte[] nsCount; // 16bit
-	private final byte[] arCount; // 16bit
+	private final int qdCount; // 16bit
+	private final int anCount; // 16bit
+	private final int nsCount; // 16bit
+	private final int arCount; // 16bit
 
 	Header(byte[] headerBytes) {
-		id      =          Arrays.copyOfRange(headerBytes,  0,  2);
+		id      = BytesTranslator.twoBytesToInt(headerBytes,  0);
 		flag    = new Flag(Arrays.copyOfRange(headerBytes,  2,  4));
-		qdCount =          Arrays.copyOfRange(headerBytes,  4,  6);
-		anCount =          Arrays.copyOfRange(headerBytes,  6,  8);
-		nsCount =          Arrays.copyOfRange(headerBytes,  8, 10);
-		arCount =          Arrays.copyOfRange(headerBytes, 10, 12);
+		qdCount = BytesTranslator.twoBytesToInt(headerBytes,  4);
+		anCount = BytesTranslator.twoBytesToInt(headerBytes,  6);
+		nsCount = BytesTranslator.twoBytesToInt(headerBytes,  8);
+		arCount = BytesTranslator.twoBytesToInt(headerBytes, 10);
 	}
 
-	Header createAnswerHeader() {
-		byte[] ret = this.bytes();
-		System.arraycopy(flag.createAnswerFlag().bytes(), 0, ret, FLAG_OFFSET, Flag.LENGTH);
-		System.arraycopy(SINGLE_ANSWER, 0, ret,           6,           2);
-		return new Header(ret);
+    Header(int id, Flag flag, int qdCount, int anCount, int nsCount, int arCount) {
+        this.id = id;
+        this.flag = flag;
+        this.qdCount = qdCount;
+        this.anCount = anCount;
+        this.nsCount = nsCount;
+        this.arCount = arCount;
+    }
+
+    /**
+     * queryに対する回答用のヘッダを作成します。
+     * @param anCount 回答リソースレコードの数
+     * @return responseHeader
+     */
+	Header createAnswerHeader(int anCount) {
+        // nsCount, arCountに関しては使う予定がないため保留
+		return new Header(this.id,
+                          this.flag.createAnswerFlag(),
+                          this.qdCount,
+                          anCount,
+                          this.nsCount,
+                          this.arCount
+        );
 	}
 
 	byte[] bytes() {
-		byte[] ret = new byte[12];
-		System.arraycopy(          id, 0, ret,           0,           2);
-		System.arraycopy(flag.bytes(), 0, ret, FLAG_OFFSET, Flag.LENGTH);
-		System.arraycopy(     qdCount, 0, ret,           4,           2);
-		System.arraycopy(     anCount, 0, ret,           6,           2);
-		System.arraycopy(     nsCount, 0, ret,           8,           2);
-		System.arraycopy(     arCount, 0, ret,          10,           2);
-		return ret;
+		ByteBuffer buffer = ByteBuffer.allocate(12);
+		buffer.put(BytesTranslator.intToTwoBytes(id))
+			  .put(flag.bytes())
+              .put(BytesTranslator.intToTwoBytes(qdCount))
+              .put(BytesTranslator.intToTwoBytes(anCount))
+              .put(BytesTranslator.intToTwoBytes(nsCount))
+              .put(BytesTranslator.intToTwoBytes(arCount));
+		return buffer.array();
 	}
 }

@@ -4,6 +4,10 @@ import kikuko72.app.model.record.name.RecordName;
 
 import java.util.Arrays;
 
+/**
+ * DNSメッセージの質問部を表すクラスです。
+ * このクラスは不変クラスとしてデザインされています。
+ */
 class Query {
 	private static final int Q_TYPE_LENGTH = 2; // 質問タイプ: 16bit
 	private static final int Q_CLASS_LENGTH = 2; // 質問クラス: 16bit

@@ -22,4 +22,15 @@ public class BytesTranslator {
 		}
 		return Arrays.copyOf(target, lastValueOffset + 1);
 	}
+
+	public static int twoBytesToInt(byte[] src) {
+		return twoBytesToInt(src, 0);
+	}
+
+	public static int twoBytesToInt(byte[] src, int from) {
+		return BytesTranslator.unSign(src[from]) * 0x100 + BytesTranslator.unSign(src[from + 1]);
+	}
+	public static byte[] intToTwoBytes(int src) {
+		return new byte[] {(byte)(src / 0x100), (byte)(src % 0x100)};
+	}
 }

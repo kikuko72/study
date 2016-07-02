@@ -3,12 +3,13 @@ package kikuko72.app.model.record;
 import kikuko72.app.logic.util.BytesTranslator;
 import kikuko72.app.model.record.name.RecordName;
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.util.Arrays;
 
 public class ResourceRecord {
 	// 試験用なので短めにする
 	private static final byte[] DEFAULT_TTL = new byte[] {0, 0, 0, 60};
-	private static final byte[] IPV4_LENGTH = new byte[] {0, 4};
 
 	private final RecordName name; // 可変長
 	private final byte[] type; // 16bit
@@ -17,14 +18,14 @@ public class ResourceRecord {
 	private final byte[] rdLength; // 16bit
 	private final byte[] rData; // 可変長(IPv4レコードなら32bit)
 
-	public ResourceRecord(byte[]name, byte[] rData) {
+	public ResourceRecord(byte[]name, InetAddress rData) {
 		// 今のところAレコードしか扱う気なし
 		this.name = RecordName.parse(name);
 		type = RecordType.A_RECORD.bytes() ;
 		dnsClass = RecordClass.INTERNET.bytes();
 		ttl = DEFAULT_TTL;
-		rdLength = IPV4_LENGTH;
-		this.rData = rData;
+		rdLength = intTo2Bytes(rData.getAddress().length);
+		this.rData = rData.getAddress();
 	}
 
 	public ResourceRecord(byte[] input) {
@@ -59,5 +60,9 @@ public class ResourceRecord {
 		System.arraycopy(    rdLength, 0, ret,  name.length() + 8,            2);
 		System.arraycopy(       rData, 0, ret, name.length() + 10, rData.length);
 		return ret;
+	}
+
+	private byte[] intTo2Bytes(int src) {
+		return new byte[] {(byte)(src / 0x100), (byte)(src % 0x100)};
 	}
 }
