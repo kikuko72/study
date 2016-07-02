@@ -2,7 +2,7 @@ package kikuko72.app.main;
 
 import kikuko72.app.logic.util.BytesTranslator;
 import kikuko72.app.model.message.DNSMessage;
-import kikuko72.app.model.message.Query;
+import kikuko72.app.model.record.RecordKey;
 import kikuko72.app.model.record.RecordType;
 import kikuko72.app.service.DNS;
 import kikuko72.app.service.Delegate;
@@ -30,7 +30,7 @@ class DNSInjector {
         DatagramPacket request = DNS.createReceivePacket();
         serviceSocket.receive(request);
         DNSMessage message = DNSMessage.scan(request.getData());
-        List<Query> queries = message.getQueries();
+        List<RecordKey> queries = message.getQueries();
         DNSMessage response;
         if (canResolve(queries.get(0))) { // ひとまず複数の質問のあるメッセージへの対応は保留
             Injector injector = new Injector();
@@ -48,7 +48,7 @@ class DNSInjector {
         serviceSocket.close();
     }
 
-    private static boolean canResolve(Query query) {
+    private static boolean canResolve(RecordKey query) {
         return "hoge.".equals(query.getDomainName()) && query.isType(RecordType.A_RECORD);
     }
 }

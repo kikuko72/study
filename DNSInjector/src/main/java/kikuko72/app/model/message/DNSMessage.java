@@ -1,8 +1,7 @@
 package kikuko72.app.model.message;
 
-import kikuko72.app.model.record.RecordType;
+import kikuko72.app.model.record.RecordKey;
 import kikuko72.app.model.record.ResourceRecord;
-import kikuko72.app.model.record.name.RecordName;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,10 +13,10 @@ import java.util.List;
  */
 public class DNSMessage {
 	private final Header header;
-	private final List<Query> queries;
+	private final List<RecordKey> queries;
 	private final List<ResourceRecord> records;
 
-	public DNSMessage(Header header, List<Query> queries, List<ResourceRecord> records) {
+	public DNSMessage(Header header, List<RecordKey> queries, List<ResourceRecord> records) {
 		this.header = header;
 		this.queries = queries;
 		this.records = records;
@@ -33,9 +32,9 @@ public class DNSMessage {
         Header header = Header.scan(input);
 
         int cursor = Header.DEFINITE_LENGTH;
-        List<Query> queries = new ArrayList<Query>();
+        List<RecordKey> queries = new ArrayList<RecordKey>();
         for (int i = 0; i < header.getQdCount(); i++) {
-            Query query   =  Query.scan(input, cursor);
+            RecordKey query   =  RecordKey.scan(input, cursor);
             queries.add(query);
             cursor += query.length();
         }
@@ -56,8 +55,8 @@ public class DNSMessage {
 		);
 	}
 
-	public List<Query> getQueries() {
-        return new ArrayList<Query>(queries);
+	public List<RecordKey> getQueries() {
+        return new ArrayList<RecordKey>(queries);
 	}
 
 	public List<ResourceRecord> getAllResourceRecords() {
@@ -89,9 +88,9 @@ public class DNSMessage {
         return ret;
     }
 
-    private byte[] queriesToBytes(List<Query> queries) {
+    private byte[] queriesToBytes(List<RecordKey> queries) {
         List<Byte> binary = new ArrayList<Byte>();
-        for(Query query :queries) {
+        for(RecordKey query :queries) {
             for(byte b : query.bytes()) {
                 binary.add(b);
             }

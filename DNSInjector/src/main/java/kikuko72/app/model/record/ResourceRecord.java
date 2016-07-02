@@ -10,27 +10,24 @@ public class ResourceRecord {
 	// 試験用なので短めにする
 	private static final byte[] DEFAULT_TTL = new byte[] {0, 0, 0, 60};
 
-	private final RecordName name; // 可変長
-	private final byte[] type; // 16bit
-	private final byte[] dnsClass; // 16bit
+	private final RecordKey recordKey;
 	private final byte[] ttl; // 32bit
 	private final byte[] rdLength; // 16bit
 	private final byte[] rData; // 可変長(IPv4レコードなら32bit)
 
 	public ResourceRecord(byte[]name, InetAddress rData) {
 		// 今のところAレコードしか扱う気なし
-		this.name = RecordName.scan(name);
-		type = RecordType.A_RECORD.bytes() ;
-		dnsClass = RecordClass.INTERNET.bytes();
+		RecordName recordName = RecordName.scan(name);
+		byte[] recordType = RecordType.A_RECORD.bytes() ;
+		byte[] recordClass = RecordClass.INTERNET.bytes();
+        recordKey = new RecordKey(recordName, recordType, recordClass);
 		ttl = DEFAULT_TTL;
 		rdLength = BytesTranslator.intToTwoBytes(rData.getAddress().length);
 		this.rData = rData.getAddress();
 	}
 
-	public ResourceRecord(RecordName name, byte[] type, byte[] dnsClass, byte[] ttl, byte[] rdLength, byte[] rData) {
-        this.name = name;
-        this.type = type;
-        this.dnsClass = dnsClass;
+	public ResourceRecord(RecordKey recordKey, byte[] ttl, byte[] rdLength, byte[] rData) {
+        this.recordKey = recordKey;
         this.ttl = ttl;
         this.rdLength = rdLength;
         this.rData = rData;
@@ -54,22 +51,18 @@ public class ResourceRecord {
      * @return ResourceRecordのインスタンス
      */
 	public static ResourceRecord scan(byte[] input, int startOffset) {
-		RecordName name = RecordName.scan(input, startOffset);
-		byte[] type     = Arrays.copyOfRange(input,      startOffset + name.length(), startOffset + name.length() +  2);
-		byte[] dnsClass = Arrays.copyOfRange(input,  startOffset + name.length() + 2, startOffset + name.length() +  4);
-		byte[] ttl      = Arrays.copyOfRange(input,  startOffset + name.length() + 4, startOffset + name.length() +  8);
-		byte[] rdLength = Arrays.copyOfRange(input,  startOffset + name.length() + 8, startOffset + name.length() + 10);
-		byte[] rData    = Arrays.copyOfRange(input, startOffset + name.length() + 10, startOffset + name.length() + 10 + BytesTranslator.twoBytesToInt(rdLength));
-        return new ResourceRecord(name, type, dnsClass, ttl, rdLength, rData);
+		RecordKey recordKey = RecordKey.scan(input, startOffset);
+		byte[] ttl      = Arrays.copyOfRange(input, startOffset + recordKey.length()    , startOffset + recordKey.length() + 4);
+		byte[] rdLength = Arrays.copyOfRange(input, startOffset + recordKey.length() + 4, startOffset + recordKey.length() + 6);
+		byte[] rData    = Arrays.copyOfRange(input, startOffset + recordKey.length() + 6, startOffset + recordKey.length() + 6 + BytesTranslator.twoBytesToInt(rdLength));
+        return new ResourceRecord(recordKey, ttl, rdLength, rData);
 	}
 
 	public int length() {
-		return name.length() + 10 + rData.length;
+		return recordKey.length() + 4 + 2 + rData.length;
 	}
 
-	public byte[] getType() {
-		return type;
-	}
+	public byte[] getType() { return recordKey.getRecordType();	}
 
 	public byte[] getRData() {
 		return rData;
@@ -77,12 +70,10 @@ public class ResourceRecord {
 
 	public byte[] bytes() {
 		byte[] ret = new byte[length()];
-		System.arraycopy(name.bytes(), 0, ret,                  0,  name.length());
-		System.arraycopy(        type, 0, ret,      name.length(),            2);
-		System.arraycopy(    dnsClass, 0, ret,  name.length() + 2,            2);
-		System.arraycopy(         ttl, 0, ret,  name.length() + 4,            4);
-		System.arraycopy(    rdLength, 0, ret,  name.length() + 8,            2);
-		System.arraycopy(       rData, 0, ret, name.length() + 10, rData.length);
+		System.arraycopy(recordKey.bytes(), 0, ret,                      0, recordKey.length());
+		System.arraycopy(              ttl, 0, ret, recordKey.length()    ,                  4);
+		System.arraycopy(         rdLength, 0, ret, recordKey.length() + 4,                  2);
+		System.arraycopy(            rData, 0, ret, recordKey.length() + 6,       rData.length);
 		return ret;
 	}
 
