@@ -84,6 +84,25 @@ class LabelUnit {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        LabelUnit labelUnit = (LabelUnit) o;
+
+        if (head != labelUnit.head) return false;
+        return Arrays.equals(tail, labelUnit.tail);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) head;
+        result = 31 * result + Arrays.hashCode(tail);
+        return result;
+    }
+
+    @Override
     public String toString(){
         if (isEmpty()) {
             return "";

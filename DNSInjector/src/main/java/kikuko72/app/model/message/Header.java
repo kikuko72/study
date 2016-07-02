@@ -86,7 +86,7 @@ class Header {
         );
 	}
 
-	byte[] bytes() {
+    byte[] bytes() {
 		ByteBuffer buffer = ByteBuffer.allocate(12);
 		buffer.put(BytesTranslator.intToTwoBytes(id))
 			  .put(flag.bytes())
@@ -96,4 +96,31 @@ class Header {
               .put(BytesTranslator.intToTwoBytes(arCount));
 		return buffer.array();
 	}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Header header = (Header) o;
+
+        if (id != header.id) return false;
+        if (qdCount != header.qdCount) return false;
+        if (anCount != header.anCount) return false;
+        if (nsCount != header.nsCount) return false;
+        if (arCount != header.arCount) return false;
+        return flag.equals(header.flag);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + flag.hashCode();
+        result = 31 * result + qdCount;
+        result = 31 * result + anCount;
+        result = 31 * result + nsCount;
+        result = 31 * result + arCount;
+        return result;
+    }
 }

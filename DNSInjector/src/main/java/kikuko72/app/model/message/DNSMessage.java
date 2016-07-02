@@ -48,10 +48,11 @@ public class DNSMessage {
         return new DNSMessage(header, queries, records);
     }
 
-	public DNSMessage createAnswerMessage(ResourceRecord... records) {
+    public DNSMessage createAnswerMessage(ResourceRecord... records) {
 		return new DNSMessage(header.createAnswerHeader(records.length),
 				              queries,
                               Arrays.asList(records)
+
 		);
 	}
 
@@ -68,9 +69,9 @@ public class DNSMessage {
 		byte[] queryBytes = queriesToBytes(queries);
 		byte[] recordsBytes = recordsToBytes(records);
 		byte[] ret = new byte[Header.DEFINITE_LENGTH + queryBytes.length + recordsBytes.length];
-		System.arraycopy( headerBytes, 0, ret,                                        0, Header.DEFINITE_LENGTH);
-		System.arraycopy(  queryBytes, 0, ret, Header.DEFINITE_LENGTH,    queryBytes.length);
-		System.arraycopy(recordsBytes, 0, ret, Header.DEFINITE_LENGTH + queryBytes.length,  recordsBytes.length);
+		System.arraycopy( headerBytes, 0, ret,                                          0, Header.DEFINITE_LENGTH);
+		System.arraycopy(  queryBytes, 0, ret, Header.DEFINITE_LENGTH                    ,      queryBytes.length);
+		System.arraycopy(recordsBytes, 0, ret, Header.DEFINITE_LENGTH + queryBytes.length,    recordsBytes.length);
 		return ret;
 	}
 
@@ -100,5 +101,26 @@ public class DNSMessage {
             ret[i] = binary.get(i);
         }
         return ret;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DNSMessage that = (DNSMessage) o;
+
+        if (!header.equals(that.header)) return false;
+        if (!queries.equals(that.queries)) return false;
+        return records.equals(that.records);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = header.hashCode();
+        result = 31 * result + queries.hashCode();
+        result = 31 * result + records.hashCode();
+        return result;
     }
 }

@@ -70,6 +70,25 @@ public class RecordName {
         return buffer.array();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RecordName that = (RecordName) o;
+
+        if (!labels.equals(that.labels)) return false;
+        return domainName.equals(that.domainName);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = labels.hashCode();
+        result = 31 * result + domainName.hashCode();
+        return result;
+    }
+
     private String joinDomainName(List<LabelUnit> labels) {
         StringBuilder builder = new StringBuilder();
         for (LabelUnit label : labels) {

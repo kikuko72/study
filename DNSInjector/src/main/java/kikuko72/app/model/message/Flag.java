@@ -42,4 +42,19 @@ import kikuko72.app.logic.util.BytesTranslator;
 		return BytesTranslator.intToTwoBytes(value);
 	}
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Flag flag = (Flag) o;
+
+        return value == flag.value;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return value;
+    }
 }

@@ -15,7 +15,7 @@ public class ResourceRecord {
 	private final byte[] rdLength; // 16bit
 	private final byte[] rData; // 可変長(IPv4レコードなら32bit)
 
-	public ResourceRecord(byte[]name, InetAddress rData) {
+    public ResourceRecord(byte[]name, InetAddress rData) {
 		// 今のところAレコードしか扱う気なし
 		RecordName recordName = RecordName.scan(name);
 		byte[] recordType = RecordType.A_RECORD.bytes() ;
@@ -76,5 +76,29 @@ public class ResourceRecord {
 		System.arraycopy(            rData, 0, ret, recordKey.length() + 6,       rData.length);
 		return ret;
 	}
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ResourceRecord that = (ResourceRecord) o;
+
+        if (!recordKey.equals(that.recordKey)) return false;
+        if (!Arrays.equals(ttl, that.ttl)) return false;
+        if (!Arrays.equals(rdLength, that.rdLength)) return false;
+        return Arrays.equals(rData, that.rData);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = recordKey.hashCode();
+        result = 31 * result + Arrays.hashCode(ttl);
+        result = 31 * result + Arrays.hashCode(rdLength);
+        result = 31 * result + Arrays.hashCode(rData);
+        return result;
+    }
 
 }

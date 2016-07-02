@@ -16,10 +16,11 @@ public class RecordKey {
 	private final byte[] recordType;
 	private final byte[] recordClass;
 
-	public RecordKey(RecordName recordName, byte[] recordType, byte[] recordClass) {
+    public RecordKey(RecordName recordName, byte[] recordType, byte[] recordClass) {
 		this.recordName = recordName;
 		this.recordType = recordType;
 		this.recordClass = recordClass;
+
 	}
 
 	/**
@@ -57,4 +58,25 @@ public class RecordKey {
 		System.arraycopy(       recordClass, 0, ret, recordName.length() + RECORD_TYPE_LENGTH, RECORD_CLASS_LENGTH);
 		return ret;
 	}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RecordKey recordKey = (RecordKey) o;
+
+        if (!recordName.equals(recordKey.recordName)) return false;
+        if (!Arrays.equals(recordType, recordKey.recordType)) return false;
+        return Arrays.equals(recordClass, recordKey.recordClass);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = recordName.hashCode();
+        result = 31 * result + Arrays.hashCode(recordType);
+        result = 31 * result + Arrays.hashCode(recordClass);
+        return result;
+    }
 }
