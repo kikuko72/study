@@ -1,17 +1,18 @@
 package kikuko72.app.main;
 
+import kikuko72.app.logic.util.BytesTranslator;
+import kikuko72.app.model.message.DNSMessage;
+import kikuko72.app.model.message.Query;
+import kikuko72.app.model.record.RecordType;
+import kikuko72.app.service.DNS;
+import kikuko72.app.service.Delegate;
+import kikuko72.app.service.Injector;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.List;
-
-import kikuko72.app.logic.util.BytesTranslator;
-import kikuko72.app.model.record.name.RecordName;
-import kikuko72.app.service.DNS;
-import kikuko72.app.model.message.DNSMessage;
-import kikuko72.app.service.Delegate;
-import kikuko72.app.service.Injector;
 
 
 class DNSInjector {
@@ -29,9 +30,9 @@ class DNSInjector {
         DatagramPacket request = DNS.createReceivePacket();
         serviceSocket.receive(request);
         DNSMessage message = DNSMessage.scan(request.getData());
-        List<RecordName> recordNames = message.getQueryRecordNames();
+        List<Query> queries = message.getQueries();
         DNSMessage response;
-        if (canResolve(recordNames.get(0))) { // ひとまず複数の質問のあるメッセージへの対応は保留
+        if (canResolve(queries.get(0))) { // ひとまず複数の質問のあるメッセージへの対応は保留
             Injector injector = new Injector();
             response = injector.resolve(message);
         } else {
@@ -47,7 +48,7 @@ class DNSInjector {
         serviceSocket.close();
     }
 
-    private static boolean canResolve(RecordName recordName) {
-        return "hoge".equals(recordName.getDomainName());
+    private static boolean canResolve(Query query) {
+        return "hoge.".equals(query.getDomainName()) && query.isType(RecordType.A_RECORD);
     }
 }

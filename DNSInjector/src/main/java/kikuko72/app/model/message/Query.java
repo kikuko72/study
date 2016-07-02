@@ -1,5 +1,6 @@
 package kikuko72.app.model.message;
 
+import kikuko72.app.model.record.RecordType;
 import kikuko72.app.model.record.name.RecordName;
 
 import java.util.Arrays;
@@ -8,7 +9,7 @@ import java.util.Arrays;
  * DNSメッセージの質問部を表すクラスです。
  * このクラスは不変クラスとしてデザインされています。
  */
-class Query {
+public class Query {
 	private static final int Q_TYPE_LENGTH = 2; // 質問タイプ: 16bit
 	private static final int Q_CLASS_LENGTH = 2; // 質問クラス: 16bit
 
@@ -41,6 +42,10 @@ class Query {
 		byte[] qClass = Arrays.copyOfRange(input, startOffset + qName.length() + Q_TYPE_LENGTH, startOffset + qName.length() + Q_TYPE_LENGTH + Q_CLASS_LENGTH);
 		return new Query(qName, qType, qClass);
 	}
+
+    public String getDomainName() { return qName.getDomainName();}
+
+    public boolean isType(RecordType type) {return type.isMatch(qType); }
 
 	RecordName getRecordName() {
 		return qName;

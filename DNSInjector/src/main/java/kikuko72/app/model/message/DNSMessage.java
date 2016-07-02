@@ -56,12 +56,8 @@ public class DNSMessage {
 		);
 	}
 
-	public List<RecordName> getQueryRecordNames() {
-        List<RecordName> queryDomainNames = new ArrayList<RecordName>();
-        for(Query query : queries) {
-            queryDomainNames.add(query.getRecordName());
-        }
-		return queryDomainNames;
+	public List<Query> getQueries() {
+        return new ArrayList<Query>(queries);
 	}
 
 	public List<ResourceRecord> getAllResourceRecords() {
