@@ -1,4 +1,4 @@
-package kikuko72.app.model.record.name;
+package kikuko72.app.model.record.identifier.name;
 
 import kikuko72.app.logic.util.BytesTranslator;
 

@@ -2,8 +2,8 @@ package kikuko72.app.main;
 
 import kikuko72.app.logic.util.BytesTranslator;
 import kikuko72.app.model.message.DNSMessage;
-import kikuko72.app.model.record.RecordKey;
-import kikuko72.app.model.record.RecordType;
+import kikuko72.app.model.record.identifier.RecordKey;
+import kikuko72.app.model.record.identifier.RecordType;
 import kikuko72.app.service.DNS;
 import kikuko72.app.service.Delegate;
 import kikuko72.app.service.Injector;

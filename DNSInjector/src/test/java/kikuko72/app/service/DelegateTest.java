@@ -1,7 +1,7 @@
 package kikuko72.app.service;
 
 import kikuko72.app.model.message.DNSMessage;
-import kikuko72.app.model.record.RecordType;
+import kikuko72.app.model.record.identifier.RecordType;
 import kikuko72.app.model.record.ResourceRecord;
 import org.junit.Test;
 
@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
  * Created by User on 2016/06/12.
  */
 public class DelegateTest {
-    public static final String DELEGATE_HOST_KEY = "delegate";
+    private static final String DELEGATE_HOST_KEY = "delegate";
 
     @Test
     public void resolve() throws IOException {

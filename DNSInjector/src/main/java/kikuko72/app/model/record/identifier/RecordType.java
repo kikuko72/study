@@ -1,4 +1,4 @@
-package kikuko72.app.model.record;
+package kikuko72.app.model.record.identifier;
 
 /**
  * Created by User on 2016/06/12.

@@ -1,6 +1,6 @@
-package kikuko72.app.model.record;
+package kikuko72.app.model.record.identifier;
 
-import kikuko72.app.model.record.name.RecordName;
+import kikuko72.app.model.record.identifier.name.RecordName;
 
 import java.util.Arrays;
 

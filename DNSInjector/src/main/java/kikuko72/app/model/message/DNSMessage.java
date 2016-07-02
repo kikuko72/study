@@ -1,6 +1,6 @@
 package kikuko72.app.model.message;
 
-import kikuko72.app.model.record.RecordKey;
+import kikuko72.app.model.record.identifier.RecordKey;
 import kikuko72.app.model.record.ResourceRecord;
 
 import java.util.ArrayList;
