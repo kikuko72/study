@@ -12,7 +12,7 @@ import kikuko72.app.service.Delegate;
 import kikuko72.app.service.Injector;
 
 
-public class DNSInjector {
+class DNSInjector {
     private static final String DELEGATE_HOST_KEY = "delegate";
 
 	public static void main(String[] args) throws IOException {

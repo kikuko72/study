@@ -3,7 +3,6 @@ package kikuko72.app.model.message;
 import kikuko72.app.logic.util.BytesTranslator;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 /**
  * DNSメッセージのヘッダ部を表すクラスです。
@@ -46,7 +45,7 @@ class Header {
      * @return Headerのインスタンス
      */
     static Header scan(byte[] input, int startOffset) {
-        int id      = BytesTranslator.twoBytesToInt(input,  startOffset +  0);
+        int id      = BytesTranslator.twoBytesToInt(input,  startOffset     );
         Flag flag   =                     Flag.scan(input,  startOffset +  2);
         int qdCount = BytesTranslator.twoBytesToInt(input,  startOffset +  4);
         int anCount = BytesTranslator.twoBytesToInt(input,  startOffset +  6);
