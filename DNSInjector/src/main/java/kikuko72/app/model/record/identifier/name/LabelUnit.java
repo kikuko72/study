@@ -13,7 +13,7 @@ import java.util.Arrays;
  * 参照位置の整合性はこのクラスの利用者がとる必要があります。
  * Created by User on 2016/06/26.
  */
-class LabelUnit {
+public class LabelUnit {
     private final byte head;
     private final byte[] tail;
 
@@ -44,11 +44,15 @@ class LabelUnit {
         return new LabelUnit(headValue, Arrays.copyOfRange(input, startOffset + 1, startOffset + 1 + headValue));
     }
 
-    boolean isEmpty() {
+    public static LabelUnit createPointer(int offset) {
+        return scan(BytesTranslator.intToTwoBytes(MINIMUM_POINTER_HEAD * 0x100 + offset), 0);
+    }
+
+    public boolean isEmpty() {
         return head == EMPTY_HEAD;
     }
 
-    boolean isPointer() {
+    public boolean isPointer() {
         return BytesTranslator.unSign(head) >= MINIMUM_POINTER_HEAD;
     }
 
@@ -76,7 +80,7 @@ class LabelUnit {
         return (BytesTranslator.unSign(head) - MINIMUM_POINTER_HEAD) * 0x100 + BytesTranslator.unSign(tail[0]);
     }
 
-    byte[] bytes() {
+    public byte[] bytes() {
         byte[] ret = new byte[tail.length + 1];
         ret[0] = head;
         System.arraycopy(tail, 0, ret, 1, tail.length);

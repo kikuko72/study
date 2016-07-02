@@ -36,6 +36,10 @@ public class ResourceRecord {
         this.rData = rData;
     }
 
+    public ResourceRecord createCompressedRecord(RecordKey compressedKey) {
+        return new ResourceRecord(compressedKey, ttl, rdLength, rData);
+    }
+
     /**
      * バイト配列の先頭からリソースレコード1つ分として解釈できる範囲までを読み取り、
      * 新しいインスタンスを生成します。残りの情報は無視されます。
@@ -64,6 +68,8 @@ public class ResourceRecord {
 	public int length() {
 		return recordKey.length() + 4 + 2 + rData.length;
 	}
+
+    public  RecordKey getRecordKey() { return  recordKey; }
 
 	public byte[] getType() { return recordKey.getRecordType();	}
 

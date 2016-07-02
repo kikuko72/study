@@ -17,6 +17,11 @@ public class RecordName {
         domainName = joinDomainName(labels);
     }
 
+    public RecordName(List<LabelUnit> compressedLabels, String domainName) {
+        this.labels = compressedLabels;
+        this.domainName = domainName;
+    }
+
     /**
      * バイト配列の先頭からレコード名1つ分として解釈できる範囲までを読み取り、
      * 新しいインスタンスを生成します。残りの情報は無視されます。
@@ -49,6 +54,8 @@ public class RecordName {
     public String getDomainName() {
         return domainName;
     }
+
+    public List<LabelUnit> getLabels() { return labels; }
 
     /**
      * このレコード名のバイト数を返します。

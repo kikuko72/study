@@ -56,6 +56,8 @@ public class DNSMessage {
 		);
 	}
 
+    Header getHeader() { return header; }
+
 	public List<RecordKey> getQueries() {
         return new ArrayList<RecordKey>(queries);
 	}

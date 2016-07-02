@@ -1,8 +1,10 @@
 package kikuko72.app.model.record.identifier;
 
+import kikuko72.app.model.record.identifier.name.LabelUnit;
 import kikuko72.app.model.record.identifier.name.RecordName;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * リソースレコードの名前、タイプ、クラスを1つにまとめたクラスです。
@@ -37,15 +39,17 @@ public class RecordKey {
 		return new RecordKey(recordName, recordType, recordClass);
 	}
 
+    public RecordKey createCompressedKey(List<LabelUnit> compressedLabels) {
+        return new RecordKey(new RecordName(compressedLabels, recordName.getDomainName()), recordType, recordClass);
+    }
+
 	public boolean isType(RecordType type) {return type.isMatch(this.recordType); }
 
 	public byte[] getRecordType() { return recordType; }
 
 	public String getDomainName() { return recordName.getDomainName(); }
 
-	RecordName getRecordName() {
-		return recordName;
-	}
+	public List<LabelUnit> getLabels() { return recordName.getLabels(); }
 
 	public int length() {
 		return recordName.length() + RECORD_TYPE_LENGTH + RECORD_CLASS_LENGTH;
