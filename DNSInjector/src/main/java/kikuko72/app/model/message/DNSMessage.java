@@ -2,6 +2,7 @@ package kikuko72.app.model.message;
 
 import kikuko72.app.model.record.RecordType;
 import kikuko72.app.model.record.ResourceRecord;
+import kikuko72.app.model.record.name.RecordName;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,8 +56,12 @@ public class DNSMessage {
 		);
 	}
 
-	public String getQueryDomainName() {
-		return this.queries.get(0).getDomainName();
+	public List<RecordName> getQueryRecordNames() {
+        List<RecordName> queryDomainNames = new ArrayList<RecordName>();
+        for(Query query : queries) {
+            queryDomainNames.add(query.getRecordName());
+        }
+		return queryDomainNames;
 	}
 
 	public List<ResourceRecord> getAllResourceRecords() {

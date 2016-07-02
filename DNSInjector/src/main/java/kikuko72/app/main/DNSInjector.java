@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.List;
 
 import kikuko72.app.logic.util.BytesTranslator;
+import kikuko72.app.model.record.name.RecordName;
 import kikuko72.app.service.DNS;
 import kikuko72.app.model.message.DNSMessage;
 import kikuko72.app.service.Delegate;
@@ -27,9 +29,9 @@ class DNSInjector {
         DatagramPacket request = DNS.createReceivePacket();
         serviceSocket.receive(request);
         DNSMessage message = DNSMessage.scan(request.getData());
-        String dn = message.getQueryDomainName();
+        List<RecordName> recordNames = message.getQueryRecordNames();
         DNSMessage response;
-        if ("hoge.".equals(dn)) {
+        if (canResolve(recordNames.get(0))) { // ひとまず複数の質問のあるメッセージへの対応は保留
             Injector injector = new Injector();
             response = injector.resolve(message);
         } else {
@@ -43,5 +45,9 @@ class DNSInjector {
         DatagramPacket responsePacket = new DatagramPacket(answer, answer.length, request.getSocketAddress());
         serviceSocket.send(responsePacket);
         serviceSocket.close();
+    }
+
+    private static boolean canResolve(RecordName recordName) {
+        return "hoge".equals(recordName.getDomainName());
     }
 }

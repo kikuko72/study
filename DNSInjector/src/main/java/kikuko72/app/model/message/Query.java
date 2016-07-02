@@ -42,8 +42,8 @@ class Query {
 		return new Query(qName, qType, qClass);
 	}
 
-	String getDomainName() {
-		return qName.getDomainName();
+	RecordName getRecordName() {
+		return qName;
 	}
 
 	int length() {
