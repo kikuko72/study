@@ -17,18 +17,31 @@ public class RecordName {
         domainName = joinDomainName(labels);
     }
 
-    public static RecordName parse(byte[] input) {
-        return parse(input, 0);
+    /**
+     * バイト配列の先頭からレコード名1つ分として解釈できる範囲までを読み取り、
+     * 新しいインスタンスを生成します。残りの情報は無視されます。
+     * @param input 入力となるバイト配列
+     * @return RecordNameのインスタンス
+     */
+    public static RecordName scan(byte[] input) {
+        return scan(input, 0);
     }
 
-    public static RecordName parse(byte[] input, int startOffset) {
-        int pos = startOffset;
+    /**
+     * バイト配列の指定の位置からレコード名1つ分として解釈できる範囲までを読み取り、
+     * 新しいインスタンスを生成します。残りの情報や、読み取り開始位置より前の情報は無視されます。
+     * @param input 入力となるバイト配列
+     * @param startOffset 読み取り開始位置
+     * @return RecordNameのインスタンス
+     */
+    public static RecordName scan(byte[] input, int startOffset) {
+        int cursor = startOffset;
         List<LabelUnit> labels = new ArrayList<LabelUnit>();
         LabelUnit label;
         do {
-            label = LabelUnit.parse(input, pos);
+            label = LabelUnit.scan(input, cursor);
             labels.add(label);
-            pos += label.length();
+            cursor += label.length();
         } while (label.hasNextLabel());
         return new RecordName(labels);
     }
@@ -38,8 +51,8 @@ public class RecordName {
     }
 
     /**
-     * この名前のバイト数を返します。
-     * @return この名前のバイト数
+     * このレコード名のバイト数を返します。
+     * @return このレコード名のバイト数
      */
     public int length() {
         int ret = 0;

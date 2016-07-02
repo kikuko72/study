@@ -19,15 +19,6 @@ class Header {
 	private final int nsCount; // 16bit
 	private final int arCount; // 16bit
 
-	Header(byte[] headerBytes) {
-		id      = BytesTranslator.twoBytesToInt(headerBytes,  0);
-		flag    = new Flag(Arrays.copyOfRange(headerBytes,  2,  4));
-		qdCount = BytesTranslator.twoBytesToInt(headerBytes,  4);
-		anCount = BytesTranslator.twoBytesToInt(headerBytes,  6);
-		nsCount = BytesTranslator.twoBytesToInt(headerBytes,  8);
-		arCount = BytesTranslator.twoBytesToInt(headerBytes, 10);
-	}
-
     Header(int id, Flag flag, int qdCount, int anCount, int nsCount, int arCount) {
         this.id = id;
         this.flag = flag;
@@ -35,6 +26,49 @@ class Header {
         this.anCount = anCount;
         this.nsCount = nsCount;
         this.arCount = arCount;
+    }
+
+    /**
+     * バイト配列の先頭からDNSヘッダ1つ分として解釈できる範囲までを読み取り、
+     * 新しいインスタンスを生成します。残りの情報は無視されます。
+     * @param input 入力となるバイト配列
+     * @return Headerのインスタンス
+     */
+    static Header scan(byte[] input) {
+        return scan(input, 0);
+    }
+
+    /**
+     * バイト配列の指定の位置からDNSヘッダ1つ分として解釈できる範囲までを読み取り、
+     * 新しいインスタンスを生成します。残りの情報や、読み取り開始位置より前の情報は無視されます。
+     * @param input 入力となるバイト配列
+     * @param startOffset 読み取り開始位置
+     * @return Headerのインスタンス
+     */
+    static Header scan(byte[] input, int startOffset) {
+        int id      = BytesTranslator.twoBytesToInt(input,  startOffset +  0);
+        Flag flag   =                     Flag.scan(input,  startOffset +  2);
+        int qdCount = BytesTranslator.twoBytesToInt(input,  startOffset +  4);
+        int anCount = BytesTranslator.twoBytesToInt(input,  startOffset +  6);
+        int nsCount = BytesTranslator.twoBytesToInt(input,  startOffset +  8);
+        int arCount = BytesTranslator.twoBytesToInt(input,  startOffset + 10);
+        return new Header(id, flag, qdCount, anCount, nsCount, arCount);
+    }
+
+    int getQdCount() {
+        return qdCount;
+    }
+
+    int getAnCount() {
+        return anCount;
+    }
+
+    int getNsCount() {
+        return nsCount;
+    }
+
+    int getArCount() {
+        return arCount;
     }
 
     /**

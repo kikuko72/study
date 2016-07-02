@@ -26,14 +26,22 @@ class LabelUnit {
         this.tail = tail;
     }
 
-    static LabelUnit parse(byte[] input, int startOffset) {
-        byte head = input[startOffset];
-        if (head == EMPTY_HEAD) {
-            return new LabelUnit(head, EMPTY_TAIL);
-        } else if (BytesTranslator.unSign(head) >= MINIMUM_POINTER_HEAD) {
-            return new LabelUnit(head, new byte[]{input[startOffset + 1]});
+    /**
+     * バイト配列の指定の位置からラベル1つ分として解釈できる範囲までを読み取り、
+     * 新しいインスタンスを生成します。残りの情報や、読み取り開始位置より前の情報は無視されます。
+     * @param input 入力となるバイト配列
+     * @param startOffset 読み取り開始位置
+     * @return LabelUnitのインスタンス
+     */
+    static LabelUnit scan(byte[] input, int startOffset) {
+        byte headValue = input[startOffset];
+        if (headValue == EMPTY_HEAD) {
+            return new LabelUnit(headValue, EMPTY_TAIL);
+        } else if (BytesTranslator.unSign(headValue) >= MINIMUM_POINTER_HEAD) {
+            return new LabelUnit(headValue, new byte[]{input[startOffset + 1]});
         }
-        return new LabelUnit(head, Arrays.copyOfRange(input, startOffset + 1, startOffset + 1 + head));
+        // tailはheadの次のバイトからheadに書かれた長さ分まで
+        return new LabelUnit(headValue, Arrays.copyOfRange(input, startOffset + 1, startOffset + 1 + headValue));
     }
 
     boolean isEmpty() {

@@ -23,6 +23,6 @@ public class Delegate implements  Resolver {
 		DatagramPacket answer = DNS.createReceivePacket();
 		querySocket.receive(answer);
 		querySocket.close();
-		return new DNSMessage(BytesTranslator.trim(answer.getData()));
+		return DNSMessage.scan(BytesTranslator.trim(answer.getData()));
 	}
 }

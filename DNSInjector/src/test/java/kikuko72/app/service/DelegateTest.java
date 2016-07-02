@@ -34,7 +34,7 @@ public class DelegateTest {
                 0x0, 0x1, // Type: A
                 0x0, 0x1 // Class: IN
         };
-        DNSMessage queryMessage = new DNSMessage(input);
+        DNSMessage queryMessage = DNSMessage.scan(input);
 
         InetAddress delegateHostAddress = InetAddress.getByName(System.getProperty(DELEGATE_HOST_KEY));
         Resolver delegate = new Delegate(delegateHostAddress.getAddress());

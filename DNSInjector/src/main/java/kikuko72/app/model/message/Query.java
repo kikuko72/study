@@ -22,15 +22,22 @@ class Query {
 		this.qClass = qClass;
 	}
 
-	static Query parse(byte[] input, int startOffset) {
+	/**
+	 * バイト配列の指定の位置からDNSメッセージの質問部1つ分として解釈できる範囲までを読み取り、
+	 * 新しいインスタンスを生成します。残りの情報や、読み取り開始位置より前の情報は無視されます。
+	 * @param input 入力となるバイト配列
+	 * @param startOffset 読み取り開始位置
+	 * @return Queryのインスタンス
+	 */
+	static Query scan(byte[] input, int startOffset) {
 		/*
 		 * 質問セクションの形式
 		 * 質問名(可変長): 0バイトで終端を示す
 		 * 質問タイプ: 16bit
 		 * 質問クラス: 16bit
 		 */
-		RecordName qName = RecordName.parse(input, startOffset);
-		byte[] qType = Arrays.copyOfRange(input,                  startOffset + qName.length(),                  startOffset + qName.length() + Q_TYPE_LENGTH);
+		RecordName qName = RecordName.scan(input, startOffset);
+		byte[] qType  = Arrays.copyOfRange(input, startOffset + qName.length()                , startOffset + qName.length() + Q_TYPE_LENGTH                 );
 		byte[] qClass = Arrays.copyOfRange(input, startOffset + qName.length() + Q_TYPE_LENGTH, startOffset + qName.length() + Q_TYPE_LENGTH + Q_CLASS_LENGTH);
 		return new Query(qName, qType, qClass);
 	}

@@ -16,29 +16,36 @@ public class DNSMessage {
 	private final Query query;
 	private final List<ResourceRecord> records;
 
-	public DNSMessage(byte[] input) {
-        byte[] trimmedInput = BytesTranslator.trim(input);
-		header = new Header(Arrays.copyOf     (trimmedInput, Header.DEFINITE_LENGTH));
-		query =  Query.parse(trimmedInput, Header.DEFINITE_LENGTH);
-		List<ResourceRecord> records = new ArrayList<ResourceRecord>();
-		for (int i = Header.DEFINITE_LENGTH + query.length(); i < trimmedInput.length;) {
-			ResourceRecord record = new ResourceRecord(Arrays.copyOfRange(trimmedInput, i, trimmedInput.length));
-			records.add(record);
-			i += record.length();
-		}
+	public DNSMessage(Header header, Query query, List<ResourceRecord> records) {
+		this.header = header;
+		this.query = query;
 		this.records = records;
 	}
 
-	public DNSMessage(Header header, Query query, ResourceRecord... records) {
-		this.header = header;
-		this.query = query;
-		this.records = Arrays.asList(records);
-	}
+    /**
+     * バイト配列の先頭からDNSメッセージ1つ分として解釈できる範囲までを読み取り、
+     * 新しいインスタンスを生成します。残りの情報は無視されます。
+     * @param input 入力となるバイト配列
+     * @return DNSMessageのインスタンス
+     */
+    public static DNSMessage scan(byte[] input) {
+        Header header = Header.scan(input);
+        Query query   =  Query.scan(input, Header.DEFINITE_LENGTH);
+
+        int cursor = Header.DEFINITE_LENGTH + query.length();
+        List<ResourceRecord> records = new ArrayList<ResourceRecord>();
+        for (int i = 0; i < header.getAnCount() + header.getNsCount() + header.getArCount(); i++) {
+            ResourceRecord record = ResourceRecord.scan(input, cursor);
+            records.add(record);
+            cursor += record.length();
+        }
+        return new DNSMessage(header, query, records);
+    }
 
 	public DNSMessage createAnswerMessage(ResourceRecord... records) {
 		return new DNSMessage(header.createAnswerHeader(records.length),
 				              query,
-				              records
+                              Arrays.asList(records)
 		);
 	}
 

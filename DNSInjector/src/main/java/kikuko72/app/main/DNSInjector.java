@@ -26,7 +26,7 @@ public class DNSInjector {
 
         DatagramPacket request = DNS.createReceivePacket();
         serviceSocket.receive(request);
-        DNSMessage message = new DNSMessage(request.getData());
+        DNSMessage message = DNSMessage.scan(request.getData());
         String dn = message.getQueryDomainName();
         DNSMessage response;
         if ("hoge.".equals(dn)) {

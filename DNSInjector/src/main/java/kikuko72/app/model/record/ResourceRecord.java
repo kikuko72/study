@@ -3,7 +3,6 @@ package kikuko72.app.model.record;
 import kikuko72.app.logic.util.BytesTranslator;
 import kikuko72.app.model.record.name.RecordName;
 
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.Arrays;
 
@@ -20,23 +19,48 @@ public class ResourceRecord {
 
 	public ResourceRecord(byte[]name, InetAddress rData) {
 		// 今のところAレコードしか扱う気なし
-		this.name = RecordName.parse(name);
+		this.name = RecordName.scan(name);
 		type = RecordType.A_RECORD.bytes() ;
 		dnsClass = RecordClass.INTERNET.bytes();
 		ttl = DEFAULT_TTL;
-		rdLength = intTo2Bytes(rData.getAddress().length);
+		rdLength = BytesTranslator.intToTwoBytes(rData.getAddress().length);
 		this.rData = rData.getAddress();
 	}
 
-	public ResourceRecord(byte[] input) {
-		    name = RecordName.parse(input);
-		    type = Arrays.copyOfRange(input,      name.length(),  name.length() + 2);
-		dnsClass = Arrays.copyOfRange(input,  name.length() + 2,  name.length() + 4);
-		     ttl = Arrays.copyOfRange(input,  name.length() + 4,  name.length() + 8);
-		rdLength = Arrays.copyOfRange(input,  name.length() + 8, name.length() + 10);
-		int unsignedRdLength = BytesTranslator.unSign(rdLength[0]) * 0xff
-				+ BytesTranslator.unSign(rdLength[1]);
-		   rData = Arrays.copyOfRange(input, name.length() + 10, name.length() + 10 + unsignedRdLength);
+	public ResourceRecord(RecordName name, byte[] type, byte[] dnsClass, byte[] ttl, byte[] rdLength, byte[] rData) {
+        this.name = name;
+        this.type = type;
+        this.dnsClass = dnsClass;
+        this.ttl = ttl;
+        this.rdLength = rdLength;
+        this.rData = rData;
+    }
+
+    /**
+     * バイト配列の先頭からリソースレコード1つ分として解釈できる範囲までを読み取り、
+     * 新しいインスタンスを生成します。残りの情報は無視されます。
+     * @param input 入力となるバイト配列
+     * @return ResourceRecordのインスタンス
+     */
+    public  static ResourceRecord scan(byte[] input) {
+        return scan(input, 0);
+    }
+
+    /**
+     * バイト配列の指定の位置からリソースレコード1つ分として解釈できる範囲までを読み取り、
+     * 新しいインスタンスを生成します。残りの情報や、読み取り開始位置より前の情報は無視されます。
+     * @param input 入力となるバイト配列
+     * @param startOffset 読み取り開始位置
+     * @return ResourceRecordのインスタンス
+     */
+	public static ResourceRecord scan(byte[] input, int startOffset) {
+		RecordName name = RecordName.scan(input, startOffset);
+		byte[] type     = Arrays.copyOfRange(input,      startOffset + name.length(), startOffset + name.length() +  2);
+		byte[] dnsClass = Arrays.copyOfRange(input,  startOffset + name.length() + 2, startOffset + name.length() +  4);
+		byte[] ttl      = Arrays.copyOfRange(input,  startOffset + name.length() + 4, startOffset + name.length() +  8);
+		byte[] rdLength = Arrays.copyOfRange(input,  startOffset + name.length() + 8, startOffset + name.length() + 10);
+		byte[] rData    = Arrays.copyOfRange(input, startOffset + name.length() + 10, startOffset + name.length() + 10 + BytesTranslator.twoBytesToInt(rdLength));
+        return new ResourceRecord(name, type, dnsClass, ttl, rdLength, rData);
 	}
 
 	public int length() {
@@ -62,7 +86,4 @@ public class ResourceRecord {
 		return ret;
 	}
 
-	private byte[] intTo2Bytes(int src) {
-		return new byte[] {(byte)(src / 0x100), (byte)(src % 0x100)};
-	}
 }

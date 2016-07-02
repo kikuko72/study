@@ -14,7 +14,7 @@ public class InjectorTest {
     @Test
     public void resolve() throws IOException {
         byte[] input = new byte[]{
-                0x0, 0x1, // ID
+                (byte)0xff, (byte)0xff, // ID
                 0x1, 0x0, // Flags: Standard query
                 0x0, 0x1, // Questions: 1
                 0x0, 0x0, // Answer RRs: 0
@@ -24,12 +24,12 @@ public class InjectorTest {
                 0x0, 0x1, // Type: A
                 0x0, 0x1 // Class: IN
         };
-        DNSMessage queryMessage = new DNSMessage(input);
+        DNSMessage queryMessage = DNSMessage.scan(input);
 
         Resolver injector = new Injector();
         DNSMessage actual = injector.resolve(queryMessage);
         byte[] expectedBytes = new byte[]{
-                0x0, 0x1, // ID
+                (byte)0xff, (byte)0xff, // ID
                 (byte)0x85, (byte)0x80, // Flags: Standard query response, No error
                 0x0, 0x1, // Questions: 1
                 0x0, 0x1, // Answer RRs: 1
