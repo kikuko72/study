@@ -64,14 +64,13 @@ class Header {
      * @param anCount 回答リソースレコードの数
      * @return responseHeader
      */
-	Header createAnswerHeader(int anCount) {
-        // nsCount, arCountに関しては使う予定がないため保留
+	Header createAnswerHeader(int anCount, int nsCount, int arCount) {
 		return new Header(this.id,
                           this.flag.createAnswerFlag(),
                           this.qdCount,
                           anCount,
-                          this.nsCount,
-                          this.arCount
+                          nsCount,
+                          arCount
         );
 	}
 

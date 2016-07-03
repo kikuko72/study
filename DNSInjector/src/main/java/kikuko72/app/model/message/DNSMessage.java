@@ -4,7 +4,6 @@ import kikuko72.app.model.record.identifier.RecordKey;
 import kikuko72.app.model.record.ResourceRecord;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -14,9 +13,9 @@ import java.util.List;
 public class DNSMessage {
 	private final Header header;
 	private final List<RecordKey> queries;
-	private final List<ResourceRecord> records;
+	private final ResponseRecords records;
 
-	public DNSMessage(Header header, List<RecordKey> queries, List<ResourceRecord> records) {
+	private DNSMessage(Header header, List<RecordKey> queries, ResponseRecords records) {
 		this.header = header;
 		this.queries = queries;
 		this.records = records;
@@ -39,19 +38,15 @@ public class DNSMessage {
             cursor += query.length();
         }
 
-        List<ResourceRecord> records = new ArrayList<ResourceRecord>();
-        for (int i = 0; i < header.getAnCount() + header.getNsCount() + header.getArCount(); i++) {
-            ResourceRecord record = ResourceRecord.scanStart(input, cursor);
-            records.add(record);
-            cursor += record.length();
-        }
+        ResponseRecords records = ResponseRecords.scanAsRecords(input, cursor, header);
+
         return new DNSMessage(header, queries, records);
     }
 
-    public DNSMessage createAnswerMessage(ResourceRecord... records) {
-		return new DNSMessage(header.createAnswerHeader(records.length),
+    public DNSMessage createAnswerMessage(ResponseRecords records) {
+		return new DNSMessage(header.createAnswerHeader(records.getAnCount(), records.getNsCount(), records.getArCount()),
 				              queries,
-                              Arrays.asList(records)
+                              records
 
 		);
 	}
@@ -63,11 +58,11 @@ public class DNSMessage {
 	}
 
 	public List<ResourceRecord> getAllResourceRecords() {
-		return new ArrayList<ResourceRecord>(records);
+		return records.getAllResourceRecords();
 	}
 
 	public byte[] bytes() {
-		return DNSMessageCompressor.compress(header, queries, records);
+		return DNSMessageCompressor.compress(header, queries, records.getAllResourceRecords());
 	}
 
     @Override
