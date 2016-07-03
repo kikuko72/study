@@ -35,7 +35,7 @@ public class ResponseRecords {
         cursor += countLength(anRecords);
         List<ResourceRecord> nsRecords = scanAsRecords(input, cursor, header.getNsCount());
         cursor += countLength(nsRecords);
-        List<ResourceRecord> arRecords = scanAsRecords(input, cursor, header.getNsCount());
+        List<ResourceRecord> arRecords = scanAsRecords(input, cursor, header.getArCount());
 
         return new ResponseRecords(anRecords, nsRecords, arRecords);
     }
