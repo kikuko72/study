@@ -17,7 +17,7 @@ public class DNSMessage {
 
 	private DNSMessage(Header header, List<RecordKey> queries, ResponseRecords records) {
 		this.header = header;
-		this.queries = queries;
+		this.queries = new ArrayList<RecordKey>(queries);
 		this.records = records;
 	}
 

@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * DNSメッセージの応答リソースレコード郡を表すクラスです。
+ * このクラスは不変クラスとしてデザインされています。
  * Created by User on 2016/07/03.
  */
 public class ResponseRecords {
@@ -14,9 +16,9 @@ public class ResponseRecords {
     private final List<ResourceRecord> arRecords;
 
     public ResponseRecords(List<ResourceRecord> anRecords, List<ResourceRecord> nsRecords, List<ResourceRecord> arRecords) {
-        this.anRecords = anRecords;
-        this.nsRecords = nsRecords;
-        this.arRecords = arRecords;
+        this.anRecords = new ArrayList<ResourceRecord>(anRecords);
+        this.nsRecords = new ArrayList<ResourceRecord>(nsRecords);
+        this.arRecords = new ArrayList<ResourceRecord>(arRecords);
     }
 
     /**

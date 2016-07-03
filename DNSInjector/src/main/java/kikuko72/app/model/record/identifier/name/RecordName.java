@@ -14,7 +14,7 @@ public class RecordName {
     private final String domainName;
 
     public RecordName(List<LabelUnit> labels) {
-        this.labels = labels;
+        this.labels = new ArrayList<LabelUnit>(labels);
         domainName = joinDomainName(labels);
     }
 
