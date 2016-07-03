@@ -34,14 +34,14 @@ public class DNSMessage {
         int cursor = Header.DEFINITE_LENGTH;
         List<RecordKey> queries = new ArrayList<RecordKey>();
         for (int i = 0; i < header.getQdCount(); i++) {
-            RecordKey query   =  RecordKey.scan(input, cursor);
+            RecordKey query   =  RecordKey.scanStart(input, cursor);
             queries.add(query);
             cursor += query.length();
         }
 
         List<ResourceRecord> records = new ArrayList<ResourceRecord>();
         for (int i = 0; i < header.getAnCount() + header.getNsCount() + header.getArCount(); i++) {
-            ResourceRecord record = ResourceRecord.scan(input, cursor);
+            ResourceRecord record = ResourceRecord.scanStart(input, cursor);
             records.add(record);
             cursor += record.length();
         }

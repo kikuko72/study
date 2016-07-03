@@ -4,6 +4,7 @@ import kikuko72.app.logic.util.BytesTranslator;
 import kikuko72.app.model.record.ResourceRecord;
 import kikuko72.app.model.record.identifier.RecordKey;
 import kikuko72.app.model.record.identifier.name.LabelUnit;
+import kikuko72.app.model.record.identifier.name.PointerLabel;
 import kikuko72.app.service.DNS;
 
 import java.util.ArrayList;
@@ -56,7 +57,7 @@ class DNSMessageCompressor {
                 } else {
                     int offset = provisionalCandidates.get(0);
                     List<LabelUnit> compressed = labels.subList(0, index);
-                    compressed.add(LabelUnit.createPointer(offset));
+                    compressed.add(new PointerLabel(previous, offset));
                     return compressed;
                 }
             }
@@ -64,7 +65,7 @@ class DNSMessageCompressor {
         }
         int offset = provisionalCandidates.get(0);
         List<LabelUnit> compressed = new ArrayList<LabelUnit>();
-        compressed.add(LabelUnit.createPointer(offset));
+        compressed.add(new PointerLabel(previous, offset));
         return compressed;
     }
 

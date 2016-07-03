@@ -27,20 +27,21 @@ public class RecordKey {
 
 	/**
 	 * バイト配列の指定の位置からRecordKey1つ分として解釈できる範囲までを読み取り、
-	 * 新しいインスタンスを生成します。残りの情報や、読み取り開始位置より前の情報は無視されます。
-	 * @param input 入力となるバイト配列
+	 * 新しいインスタンスを生成します。残りの情報は無視されますが、
+	 * 開始位置より前の情報を参照することがあるため、入力にはDNSメッセージ全体を必要とします。
+	 * @param message DNSメッセージ全体のバイト配列
 	 * @param startOffset 読み取り開始位置
 	 * @return RecordKeyのインスタンス
 	 */
-	public static RecordKey scan(byte[] input, int startOffset) {
-		RecordName recordName = RecordName.scan(input, startOffset);
-		byte[] recordType  = Arrays.copyOfRange(input, startOffset + recordName.length()                     , startOffset + recordName.length() + RECORD_TYPE_LENGTH);
-		byte[] recordClass = Arrays.copyOfRange(input, startOffset + recordName.length() + RECORD_TYPE_LENGTH, startOffset + recordName.length() + RECORD_TYPE_LENGTH + RECORD_CLASS_LENGTH);
+	public static RecordKey scanStart(byte[] message, int startOffset) {
+		RecordName recordName = RecordName.scanStart(message, startOffset);
+		byte[] recordType  = Arrays.copyOfRange(message, startOffset + recordName.length()                     , startOffset + recordName.length() + RECORD_TYPE_LENGTH);
+		byte[] recordClass = Arrays.copyOfRange(message, startOffset + recordName.length() + RECORD_TYPE_LENGTH, startOffset + recordName.length() + RECORD_TYPE_LENGTH + RECORD_CLASS_LENGTH);
 		return new RecordKey(recordName, recordType, recordClass);
 	}
 
     public RecordKey createCompressedKey(List<LabelUnit> compressedLabels) {
-        return new RecordKey(new RecordName(compressedLabels, recordName.getDomainName()), recordType, recordClass);
+        return new RecordKey(new RecordName(compressedLabels), recordType, recordClass);
     }
 
 	public boolean isType(RecordType type) {return type.isMatch(this.recordType); }

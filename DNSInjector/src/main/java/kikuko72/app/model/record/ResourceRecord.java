@@ -18,12 +18,8 @@ public class ResourceRecord {
 	private final byte[] rdLength; // 16bit
 	private final byte[] rData; // 可変長(IPv4レコードなら32bit)
 
-    public ResourceRecord(byte[]name, InetAddress rData) {
-		// 今のところAレコードしか扱う気なし
-		RecordName recordName = RecordName.scan(name);
-		byte[] recordType = RecordType.A_RECORD.bytes() ;
-		byte[] recordClass = RecordClass.INTERNET.bytes();
-        recordKey = new RecordKey(recordName, recordType, recordClass);
+    public ResourceRecord(RecordKey recordKey, InetAddress rData) {
+        this.recordKey = recordKey;
 		ttl = DEFAULT_TTL;
 		rdLength = BytesTranslator.intToTwoBytes(rData.getAddress().length);
 		this.rData = rData.getAddress();
@@ -41,27 +37,18 @@ public class ResourceRecord {
     }
 
     /**
-     * バイト配列の先頭からリソースレコード1つ分として解釈できる範囲までを読み取り、
-     * 新しいインスタンスを生成します。残りの情報は無視されます。
-     * @param input 入力となるバイト配列
-     * @return ResourceRecordのインスタンス
-     */
-    public  static ResourceRecord scan(byte[] input) {
-        return scan(input, 0);
-    }
-
-    /**
      * バイト配列の指定の位置からリソースレコード1つ分として解釈できる範囲までを読み取り、
-     * 新しいインスタンスを生成します。残りの情報や、読み取り開始位置より前の情報は無視されます。
-     * @param input 入力となるバイト配列
+     * 新しいインスタンスを生成します。残りの情報は無視されますが、
+     * 開始位置より前の情報を参照することがあるため、入力にはDNSメッセージ全体を必要とします。
+     * @param message DNSメッセージ全体のバイト配列
      * @param startOffset 読み取り開始位置
      * @return ResourceRecordのインスタンス
      */
-	public static ResourceRecord scan(byte[] input, int startOffset) {
-		RecordKey recordKey = RecordKey.scan(input, startOffset);
-		byte[] ttl      = Arrays.copyOfRange(input, startOffset + recordKey.length()    , startOffset + recordKey.length() + 4);
-		byte[] rdLength = Arrays.copyOfRange(input, startOffset + recordKey.length() + 4, startOffset + recordKey.length() + 6);
-		byte[] rData    = Arrays.copyOfRange(input, startOffset + recordKey.length() + 6, startOffset + recordKey.length() + 6 + BytesTranslator.twoBytesToInt(rdLength));
+	public static ResourceRecord scanStart(byte[] message, int startOffset) {
+		RecordKey recordKey = RecordKey.scanStart(message, startOffset);
+		byte[] ttl      = Arrays.copyOfRange(message, startOffset + recordKey.length()    , startOffset + recordKey.length() + 4);
+		byte[] rdLength = Arrays.copyOfRange(message, startOffset + recordKey.length() + 4, startOffset + recordKey.length() + 6);
+		byte[] rData    = Arrays.copyOfRange(message, startOffset + recordKey.length() + 6, startOffset + recordKey.length() + 6 + BytesTranslator.twoBytesToInt(rdLength));
         return new ResourceRecord(recordKey, ttl, rdLength, rData);
 	}
 
