@@ -1,13 +1,8 @@
 package kikuko72.app.model.message;
 
-import kikuko72.app.model.record.ResourceRecord;
-import kikuko72.app.model.record.identifier.RecordKey;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
 
 /**
  * Created by User on 2016/07/02.

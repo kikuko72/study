@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * バイト配列の指定の位置をラベルの開始位置として読み取るためのクラスです。
+ * バイト配列の指定の位置をラベル列の開始位置として読み取るためのクラスです。
  * Created by User on 2016/07/03.
  */
 class LabelScanner {
@@ -33,15 +33,7 @@ class LabelScanner {
         return labels;
     }
 
-    /**
-     * バイト配列の指定の位置からラベル1つ分として解釈できる範囲までを読み取り、
-     * 新しいインスタンスを生成します。残りの情報は無視されますが、
-     * 開始位置より前の情報を参照することがあるため、入力にはDNSメッセージ全体を必要とします。
-     * @param message DNSメッセージ全体のバイト配列
-     * @param startOffset 読み取り開始位置
-     * @return LabelUnitのインスタンス
-     */
-    static LabelUnit scanALabel(byte[] message, int startOffset) {
+    private static LabelUnit scanALabel(byte[] message, int startOffset) {
         byte headValue = message[startOffset];
         if (headValue == NameLabel.EMPTY_HEAD) {
             return EMPTY_LABEL;

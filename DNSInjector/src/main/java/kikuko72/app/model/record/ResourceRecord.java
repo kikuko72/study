@@ -1,10 +1,7 @@
 package kikuko72.app.model.record;
 
 import kikuko72.app.logic.util.BytesTranslator;
-import kikuko72.app.model.record.identifier.RecordClass;
 import kikuko72.app.model.record.identifier.RecordKey;
-import kikuko72.app.model.record.identifier.RecordType;
-import kikuko72.app.model.record.identifier.name.RecordName;
 
 import java.net.InetAddress;
 import java.util.Arrays;

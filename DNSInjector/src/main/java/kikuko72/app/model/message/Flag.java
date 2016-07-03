@@ -14,7 +14,7 @@ import kikuko72.app.logic.util.BytesTranslator;
 
 	private final int value;
 
-    Flag(int value) {
+    private Flag(int value) {
         this.value = value;
     }
 

@@ -18,7 +18,7 @@ class Header {
 	private final int nsCount; // 16bit
 	private final int arCount; // 16bit
 
-    Header(int id, Flag flag, int qdCount, int anCount, int nsCount, int arCount) {
+    private Header(int id, Flag flag, int qdCount, int anCount, int nsCount, int arCount) {
         this.id = id;
         this.flag = flag;
         this.qdCount = qdCount;
@@ -34,23 +34,12 @@ class Header {
      * @return Headerのインスタンス
      */
     static Header scan(byte[] input) {
-        return scan(input, 0);
-    }
-
-    /**
-     * バイト配列の指定の位置からDNSヘッダ1つ分として解釈できる範囲までを読み取り、
-     * 新しいインスタンスを生成します。残りの情報や、読み取り開始位置より前の情報は無視されます。
-     * @param input 入力となるバイト配列
-     * @param startOffset 読み取り開始位置
-     * @return Headerのインスタンス
-     */
-    static Header scan(byte[] input, int startOffset) {
-        int id      = BytesTranslator.twoBytesToInt(input,  startOffset     );
-        Flag flag   =                     Flag.scan(input,  startOffset +  2);
-        int qdCount = BytesTranslator.twoBytesToInt(input,  startOffset +  4);
-        int anCount = BytesTranslator.twoBytesToInt(input,  startOffset +  6);
-        int nsCount = BytesTranslator.twoBytesToInt(input,  startOffset +  8);
-        int arCount = BytesTranslator.twoBytesToInt(input,  startOffset + 10);
+        int id      = BytesTranslator.twoBytesToInt(input      );
+        Flag flag   =                     Flag.scan(input, +  2);
+        int qdCount = BytesTranslator.twoBytesToInt(input, +  4);
+        int anCount = BytesTranslator.twoBytesToInt(input, +  6);
+        int nsCount = BytesTranslator.twoBytesToInt(input, +  8);
+        int arCount = BytesTranslator.twoBytesToInt(input, + 10);
         return new Header(id, flag, qdCount, anCount, nsCount, arCount);
     }
 

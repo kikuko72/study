@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * DNSメッセージの圧縮を行うクラスです。
  * Created by User on 2016/07/02.
  */
 class DNSMessageCompressor {

@@ -6,6 +6,7 @@ import java.util.List;
 
 /**
  * リソースレコードの名前部を表します。
+ * このクラスは不変クラスとしてデザインされています。
  * Created by User on 2016/06/12.
  */
 public class RecordName {
@@ -33,7 +34,7 @@ public class RecordName {
         return domainName;
     }
 
-    public List<LabelUnit> getLabels() { return labels; }
+    public List<LabelUnit> getLabels() { return new ArrayList<LabelUnit>(labels); }
 
     /**
      * このレコード名のバイト数を返します。

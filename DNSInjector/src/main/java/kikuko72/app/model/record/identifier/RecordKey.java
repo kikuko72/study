@@ -46,7 +46,7 @@ public class RecordKey {
 
 	public boolean isType(RecordType type) {return type.isMatch(this.recordType); }
 
-	public byte[] getRecordType() { return recordType; }
+	public byte[] getRecordType() { return Arrays.copyOf(recordType, RECORD_TYPE_LENGTH); }
 
 	public String getDomainName() { return recordName.getDomainName(); }
 
