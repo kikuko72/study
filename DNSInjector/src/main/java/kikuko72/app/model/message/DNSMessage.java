@@ -67,43 +67,8 @@ public class DNSMessage {
 	}
 
 	public byte[] bytes() {
-		byte[] headerBytes = header.bytes();
-		byte[] queryBytes = queriesToBytes(queries);
-		byte[] recordsBytes = recordsToBytes(records);
-		byte[] ret = new byte[Header.DEFINITE_LENGTH + queryBytes.length + recordsBytes.length];
-		System.arraycopy( headerBytes, 0, ret,                                          0, Header.DEFINITE_LENGTH);
-		System.arraycopy(  queryBytes, 0, ret, Header.DEFINITE_LENGTH                    ,      queryBytes.length);
-		System.arraycopy(recordsBytes, 0, ret, Header.DEFINITE_LENGTH + queryBytes.length,    recordsBytes.length);
-		return ret;
+		return DNSMessageCompressor.compress(header, queries, records);
 	}
-
-	private byte[] recordsToBytes(List<ResourceRecord> records) {
-        List<Byte> binary = new ArrayList<Byte>();
-        for(ResourceRecord record :records) {
-            for(byte b : record.bytes()) {
-                binary.add(b);
-            }
-        }
-        byte[] ret = new byte[binary.size()];
-        for(int i = 0; i < ret.length; i++) {
-            ret[i] = binary.get(i);
-        }
-        return ret;
-    }
-
-    private byte[] queriesToBytes(List<RecordKey> queries) {
-        List<Byte> binary = new ArrayList<Byte>();
-        for(RecordKey query :queries) {
-            for(byte b : query.bytes()) {
-                binary.add(b);
-            }
-        }
-        byte[] ret = new byte[binary.size()];
-        for(int i = 0; i < ret.length; i++) {
-            ret[i] = binary.get(i);
-        }
-        return ret;
-    }
 
     @Override
     public boolean equals(Object o) {
