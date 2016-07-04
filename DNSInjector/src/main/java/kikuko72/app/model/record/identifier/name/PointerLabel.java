@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class PointerLabel implements LabelUnit {
 
-    static final int MINIMUM_POINTER_HEAD = 0xc0;
+    public static final int MINIMUM_POINTER_HEAD = 0xc0;
 
     private final int pointOffset;
     private final List<LabelUnit> labelSequence;

@@ -57,9 +57,11 @@ public class ResourceRecord {
 
 	public byte[] getType() { return recordKey.getRecordType();	}
 
-	public byte[] getRData() {
-		return rData;
-	}
+    public byte[] getTtl() { return Arrays.copyOf(ttl, ttl.length); }
+
+    public byte[] getRdLength() { return Arrays.copyOf(rdLength, rdLength.length); }
+
+	public byte[] getRData() { return Arrays.copyOf(rData, rData.length); }
 
 	public byte[] bytes() {
 		byte[] ret = new byte[length()];
