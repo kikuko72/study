@@ -1,35 +1,88 @@
 package kikuko72.app.model.message;
 
-import java.util.Arrays;
+import kikuko72.app.model.record.identifier.RecordKey;
+import kikuko72.app.model.record.ResourceRecord;
 
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * DNSメッセージを表すクラスです。
+ * このクラスは不変クラスとしてデザインされています。
+ */
 public class DNSMessage {
-	private Header header;
-	private Body body;
+	private final Header header;
+	private final List<RecordKey> queries;
+	private final ResponseRecords records;
 
-	public DNSMessage(byte[] input) {
-		header = new Header(Arrays.copyOf     (input, Header.HEADER_LENGTH));
-		body =   new Body  (Arrays.copyOfRange(input, Header.HEADER_LENGTH, input.length));
+	private DNSMessage(Header header, List<RecordKey> queries, ResponseRecords records) {
+		this.header = header;
+		this.queries = new ArrayList<RecordKey>(queries);
+		this.records = records;
 	}
 
-	public DNSMessage createAnswerMessage() {
-		byte[] responseHeader = header.createAnswerHeader().bytes();
-		byte[] responseBody = body.createAnswerBody().bytes();
-		byte[] answerBytes = new byte[Header.HEADER_LENGTH + responseBody.length];
-		System.arraycopy(responseHeader, 0, answerBytes,                     0, Header.HEADER_LENGTH);
-		System.arraycopy(  responseBody, 0, answerBytes,  Header.HEADER_LENGTH,  responseBody.length);
-		return new DNSMessage(answerBytes);
+    /**
+     * バイト配列の先頭からDNSメッセージ1つ分として解釈できる範囲までを読み取り、
+     * 新しいインスタンスを生成します。残りの情報は無視されます。
+     * @param input 入力となるバイト配列
+     * @return DNSMessageのインスタンス
+     */
+    public static DNSMessage scan(byte[] input) {
+        Header header = Header.scan(input);
+
+        int cursor = Header.DEFINITE_LENGTH;
+        List<RecordKey> queries = new ArrayList<RecordKey>();
+        for (int i = 0; i < header.getQdCount(); i++) {
+            RecordKey query   =  RecordKey.scanStart(input, cursor);
+            queries.add(query);
+            cursor += query.length();
+        }
+
+        ResponseRecords records = ResponseRecords.scanAsRecords(input, cursor, header);
+
+        return new DNSMessage(header, queries, records);
+    }
+
+    public DNSMessage createAnswerMessage(ResponseRecords records) {
+		return new DNSMessage(header.createAnswerHeader(records.getAnCount(), records.getNsCount(), records.getArCount()),
+				              queries,
+                              records
+
+		);
 	}
 
-	public String getDomainName() {
-		return this.body.getDomainName();
+    Header getHeader() { return header; }
+
+	public List<RecordKey> getQueries() {
+        return new ArrayList<RecordKey>(queries);
+	}
+
+	public List<ResourceRecord> getAllResourceRecords() {
+		return records.getAllResourceRecords();
 	}
 
 	public byte[] bytes() {
-		byte[] headerBytes = header.bytes();
-		byte[] bodyBytes = body.bytes();
-		byte[] ret = new byte[Header.HEADER_LENGTH + bodyBytes.length];
-		System.arraycopy(headerBytes, 0, ret,                    0, Header.HEADER_LENGTH);
-		System.arraycopy(  bodyBytes, 0, ret, Header.HEADER_LENGTH,     bodyBytes.length);
-		return ret;
+		return DNSMessageCompressor.compress(header, queries, records.getAllResourceRecords());
 	}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DNSMessage that = (DNSMessage) o;
+
+        if (!header.equals(that.header)) return false;
+        if (!queries.equals(that.queries)) return false;
+        return records.equals(that.records);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = header.hashCode();
+        result = 31 * result + queries.hashCode();
+        result = 31 * result + records.hashCode();
+        return result;
+    }
 }
