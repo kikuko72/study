@@ -2,6 +2,7 @@ package kikuko72.app.model.record;
 
 import kikuko72.app.logic.util.BytesTranslator;
 import kikuko72.app.model.record.identifier.RecordKey;
+import kikuko72.app.model.record.identifier.name.RecordName;
 
 import java.net.InetAddress;
 import java.util.Arrays;
@@ -11,26 +12,23 @@ public class ResourceRecord {
 	private static final byte[] DEFAULT_TTL = new byte[] {0, 0, 0, 60};
 
 	private final RecordKey recordKey;
-	private final byte[] ttl; // 32bit
-	private final byte[] rdLength; // 16bit
-	private final byte[] rData; // 可変長(IPv4レコードなら32bit)
+    private final RecordValue recordValue;
 
     public ResourceRecord(RecordKey recordKey, InetAddress rData) {
         this.recordKey = recordKey;
-		ttl = DEFAULT_TTL;
-		rdLength = BytesTranslator.intToTwoBytes(rData.getAddress().length);
-		this.rData = rData.getAddress();
+		this.recordValue = new RecordValue(DEFAULT_TTL,
+                                           BytesTranslator.intToTwoBytes(rData.getAddress().length),
+                                           rData.getAddress()
+        );
 	}
 
-	public ResourceRecord(RecordKey recordKey, byte[] ttl, byte[] rdLength, byte[] rData) {
+	public ResourceRecord(RecordKey recordKey, RecordValue recordValue) {
         this.recordKey = recordKey;
-        this.ttl = ttl;
-        this.rdLength = rdLength;
-        this.rData = rData;
+        this.recordValue = recordValue;
     }
 
     public ResourceRecord createCompressedRecord(RecordKey compressedKey) {
-        return new ResourceRecord(compressedKey, ttl, rdLength, rData);
+        return new ResourceRecord(compressedKey, recordValue);
     }
 
     /**
@@ -43,35 +41,30 @@ public class ResourceRecord {
      */
 	public static ResourceRecord scanStart(byte[] message, int startOffset) {
 		RecordKey recordKey = RecordKey.scanStart(message, startOffset);
-		byte[] ttl      = Arrays.copyOfRange(message, startOffset + recordKey.length()    , startOffset + recordKey.length() + 4);
-		byte[] rdLength = Arrays.copyOfRange(message, startOffset + recordKey.length() + 4, startOffset + recordKey.length() + 6);
-		byte[] rData    = Arrays.copyOfRange(message, startOffset + recordKey.length() + 6, startOffset + recordKey.length() + 6 + BytesTranslator.twoBytesToInt(rdLength));
-        return new ResourceRecord(recordKey, ttl, rdLength, rData);
+        RecordValue recordValue = RecordValue.scanStart(message, startOffset + recordKey.length());
+        return new ResourceRecord(recordKey, recordValue);
 	}
 
 	public int length() {
-		return recordKey.length() + 4 + 2 + rData.length;
+		return recordKey.length() + recordValue.length();
 	}
 
     public  RecordKey getRecordKey() { return  recordKey; }
 
 	public byte[] getType() { return recordKey.getRecordType();	}
 
-    public byte[] getTtl() { return Arrays.copyOf(ttl, ttl.length); }
+    public byte[] getTtl() { return recordValue.getTtl(); }
 
-    public byte[] getRdLength() { return Arrays.copyOf(rdLength, rdLength.length); }
+    public byte[] getRdLength() { return recordValue.getRdLength(); }
 
-	public byte[] getRData() { return Arrays.copyOf(rData, rData.length); }
+	public byte[] getRData() { return recordValue.getRData(); }
 
 	public byte[] bytes() {
 		byte[] ret = new byte[length()];
-		System.arraycopy(recordKey.bytes(), 0, ret,                      0, recordKey.length());
-		System.arraycopy(              ttl, 0, ret, recordKey.length()    ,                  4);
-		System.arraycopy(         rdLength, 0, ret, recordKey.length() + 4,                  2);
-		System.arraycopy(            rData, 0, ret, recordKey.length() + 6,       rData.length);
+		System.arraycopy(  recordKey.bytes(), 0, ret,                  0, recordKey.length()  );
+        System.arraycopy(recordValue.bytes(), 0, ret, recordKey.length(), recordValue.length());
 		return ret;
 	}
-
 
     @Override
     public boolean equals(Object o) {
@@ -81,19 +74,14 @@ public class ResourceRecord {
         ResourceRecord that = (ResourceRecord) o;
 
         if (!recordKey.equals(that.recordKey)) return false;
-        if (!Arrays.equals(ttl, that.ttl)) return false;
-        if (!Arrays.equals(rdLength, that.rdLength)) return false;
-        return Arrays.equals(rData, that.rData);
+        return recordValue.equals(that.recordValue);
 
     }
 
     @Override
     public int hashCode() {
         int result = recordKey.hashCode();
-        result = 31 * result + Arrays.hashCode(ttl);
-        result = 31 * result + Arrays.hashCode(rdLength);
-        result = 31 * result + Arrays.hashCode(rData);
+        result = 31 * result + recordValue.hashCode();
         return result;
     }
-
 }
