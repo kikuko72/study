@@ -18,11 +18,16 @@ public class RecordKey {
 	private final byte[] recordType;
 	private final byte[] recordClass;
 
+    public RecordKey(String domainName, RecordType recordType, RecordClass recordClass) {
+        this.recordName = new RecordName(domainName);
+        this.recordType = recordType.bytes();
+        this.recordClass = recordClass.bytes();
+    }
+
     public RecordKey(RecordName recordName, byte[] recordType, byte[] recordClass) {
 		this.recordName = recordName;
 		this.recordType = recordType;
 		this.recordClass = recordClass;
-
 	}
 
 	/**

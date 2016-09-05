@@ -20,7 +20,7 @@ public class PointerLabel implements LabelUnit {
 
     public PointerLabel(byte[] message, int pointOffset) {
         this.pointOffset = pointOffset;
-        labelSequence = LabelScanner.scanStart(message, pointOffset);
+        labelSequence = LabelFactory.scanStart(message, pointOffset);
     }
 
     @Override

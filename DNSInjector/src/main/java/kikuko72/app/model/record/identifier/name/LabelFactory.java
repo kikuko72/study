@@ -10,8 +10,19 @@ import java.util.List;
  * バイト配列の指定の位置をラベル列の開始位置として読み取るためのクラスです。
  * Created by User on 2016/07/03.
  */
-class LabelScanner {
+class LabelFactory {
     private static final LabelUnit EMPTY_LABEL = new NameLabel(NameLabel.EMPTY_HEAD, new byte[]{});
+
+    static List<LabelUnit> toLabel(String domainName) {
+        List<LabelUnit> labels = new ArrayList<LabelUnit>();
+        for(String part : domainName.split("\\.")) {
+            if(part.length() == 0) { break; }
+            LabelUnit label = new NameLabel((byte)part.length(), part.getBytes());
+            labels.add(label);
+        }
+        labels.add(EMPTY_LABEL);
+        return labels;
+    }
 
     /**
      * バイト配列の指定の位置からラベル列として解釈できる範囲までを読み取り、
@@ -26,7 +37,7 @@ class LabelScanner {
         List<LabelUnit> labels = new ArrayList<LabelUnit>();
         LabelUnit label;
         do {
-            label = LabelScanner.scanALabel(message, cursor);
+            label = LabelFactory.scanALabel(message, cursor);
             labels.add(label);
             cursor += label.length();
         } while (label.hasNextLabel());

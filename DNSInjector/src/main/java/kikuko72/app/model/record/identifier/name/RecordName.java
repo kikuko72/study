@@ -13,6 +13,11 @@ public class RecordName {
     private final List<LabelUnit> labels;
     private final String domainName;
 
+    public RecordName(String domainName) {
+        this.labels = LabelFactory.toLabel(domainName);
+        this.domainName = domainName;
+    }
+
     public RecordName(List<LabelUnit> labels) {
         this.labels = new ArrayList<LabelUnit>(labels);
         domainName = joinDomainName(labels);
@@ -27,7 +32,7 @@ public class RecordName {
      * @return RecordNameのインスタンス
      */
     public static RecordName scanStart(byte[] message, int startOffset) {
-        return new RecordName(LabelScanner.scanStart(message, startOffset));
+        return new RecordName(LabelFactory.scanStart(message, startOffset));
     }
 
     public String getDomainName() {
