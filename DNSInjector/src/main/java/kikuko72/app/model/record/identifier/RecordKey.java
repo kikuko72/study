@@ -65,6 +65,13 @@ public class RecordKey {
 	}
 
     @Override
+    public String toString() {
+        return  "domainName=" + recordName.getDomainName() +
+                ", recordType=" + Arrays.toString(recordType) +
+                ", recordClass=" + Arrays.toString(recordClass);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

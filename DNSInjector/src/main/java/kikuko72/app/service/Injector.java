@@ -21,13 +21,6 @@ public class Injector implements  Resolver{
         assert query.isType(RecordType.A_RECORD);
         ResourceRecord localhostRecord = new ResourceRecord(query, InetAddress.getByAddress(new byte[]{127, 0, 0, 1}));
         ResponseRecords records = new ResponseRecords(Collections.singletonList(localhostRecord), Collections.<ResourceRecord>emptyList(), Collections.<ResourceRecord>emptyList());
-		DNSMessage answerMessage = request.createAnswerMessage(records);
-		byte [] preAns = answerMessage.bytes();
-		byte[] answer = BytesTranslator.trim(preAns);
-		for (byte b : answer) {
-			System.out.print(Integer.toHexString(b & 0xFF) + ", ");
-		}
-		System.out.println();
-		return answerMessage;
+		return request.createAnswerMessage(records);
 	}
 }

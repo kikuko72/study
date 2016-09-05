@@ -33,4 +33,12 @@ public class BytesTranslator {
 	public static byte[] intToTwoBytes(int src) {
 		return new byte[] {(byte)(src / 0x100), (byte)(src % 0x100)};
 	}
+
+    public static int[] toUnsignedArray(byte[] bytes) {
+        int ret[] = new int[bytes.length];
+        for(int i = 0; i < bytes.length; i++) {
+            ret[i] = unSign(bytes[i]);
+        }
+        return ret;
+    }
 }
