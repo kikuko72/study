@@ -11,6 +11,8 @@ import kikuko72.app.logic.util.BytesTranslator;
 	private static final int RESPONSE_FLAG_AA = 0x4 * 0x100;
 	private static final int RESPONSE_FLAG_TC = 0x2 * 0x100;
 	private static final int RESPONSE_FLAG_RA = 0x80;
+    private static final int RESPONSE_FLAG_R_CODE_SUCCESS = 0x0;
+    private static final int RESPONSE_FLAG_R_CODE_FAIL = 0x3;
 
 	private final int value;
 
@@ -29,12 +31,13 @@ import kikuko72.app.logic.util.BytesTranslator;
         return new Flag(BytesTranslator.twoBytesToInt(input, startOffset));
     }
 
-	Flag createAnswerFlag() {
+	Flag createAnswerFlag(boolean succeeded) {
 		return new Flag(
                 value | RESPONSE_FLAG_QR // 応答フラグON
                       | RESPONSE_FLAG_AA // オーソリティ応答フラグON
                       & (~RESPONSE_FLAG_TC) // 切捨てフラグOFF
                       | RESPONSE_FLAG_RA // 再帰有効
+                      | (succeeded ? RESPONSE_FLAG_R_CODE_SUCCESS : RESPONSE_FLAG_R_CODE_FAIL) // 戻りコード
         );
 	}
 

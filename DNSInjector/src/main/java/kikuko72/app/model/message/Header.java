@@ -66,7 +66,7 @@ class Header {
      */
 	Header createAnswerHeader(int anCount, int nsCount, int arCount) {
 		return new Header(this.id,
-                          this.flag.createAnswerFlag(),
+                          this.flag.createAnswerFlag(anCount > 0),
                           this.qdCount,
                           anCount,
                           nsCount,
