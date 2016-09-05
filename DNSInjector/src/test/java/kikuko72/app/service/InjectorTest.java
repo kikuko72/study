@@ -1,9 +1,16 @@
 package kikuko72.app.service;
 
+import kikuko72.app.main.DNSInjector;
 import kikuko72.app.model.message.DNSMessage;
+import kikuko72.app.model.record.RecordValue;
+import kikuko72.app.model.record.identifier.RecordClass;
+import kikuko72.app.model.record.identifier.RecordKey;
+import kikuko72.app.model.record.identifier.RecordType;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -11,6 +18,7 @@ import static org.junit.Assert.*;
  * Created by User on 2016/06/12.
  */
 public class InjectorTest {
+
     @Test
     public void resolve() throws IOException {
         byte[] input = new byte[]{
@@ -26,7 +34,11 @@ public class InjectorTest {
         };
         DNSMessage queryMessage = DNSMessage.scan(input);
 
-        Resolver injector = new Injector();
+        Map<RecordKey, RecordValue> recordStore = new HashMap<RecordKey, RecordValue>();
+        RecordKey hogeIpv4 = new RecordKey("hoge.", RecordType.A_RECORD, RecordClass.INTERNET);
+        RecordValue localhostData = new RecordValue(DNSInjector.DEFAULT_TTL, new byte[]{0, 4}, new byte[]{127, 0, 0, 1});
+        recordStore.put(hogeIpv4, localhostData);
+        Resolver injector = new Injector(recordStore);
         DNSMessage actual = injector.resolve(queryMessage);
         byte[] expectedBytes = new byte[]{
                 (byte)0xff, (byte)0xff, // ID

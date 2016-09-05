@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 /**
  * Created by User on 2016/06/12.
  */
-public class DelegateTest {
+public class DelegateImplTest {
     private static final String DELEGATE_HOST_KEY = "delegate";
 
     @Test
@@ -37,7 +37,7 @@ public class DelegateTest {
         DNSMessage queryMessage = DNSMessage.scan(input);
 
         InetAddress delegateHostAddress = InetAddress.getByName(System.getProperty(DELEGATE_HOST_KEY));
-        Resolver delegate = new Delegate(delegateHostAddress.getAddress());
+        Resolver delegate = new DelegateImpl(delegateHostAddress.getAddress());
         DNSMessage answer = delegate.resolve(queryMessage);
 
         InetAddress expected;

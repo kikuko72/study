@@ -1,33 +1,33 @@
 package kikuko72.app.service;
 
 import kikuko72.app.model.message.DNSMessage;
+import kikuko72.app.model.record.RecordValue;
 import kikuko72.app.model.record.identifier.RecordKey;
-import kikuko72.app.model.record.identifier.RecordType;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Created by User on 2016/09/05.
  */
 public class ResolverImpl implements Resolver {
     private Delegate delegate;
+    private Injector injector;
 
-    public ResolverImpl(Delegate delegate) {
+    public ResolverImpl(Delegate delegate, Map<RecordKey, RecordValue> recordStore) {
         this.delegate = delegate;
+        this.injector = new Injector(recordStore);
     }
 
     public DNSMessage resolve(DNSMessage request) throws IOException {
-        List<RecordKey> queries = request.getQueries();
-        if (canResolve(queries.get(0))) { // ひとまず複数の質問のあるメッセージへの対応は保留
-            Injector injector = new Injector();
-            return injector.resolve(request);
-        } else {
-            return delegate.resolve(request);
+        DNSMessage response = injector.resolve(request);
+        if (response != null) {
+            return response;
         }
-    }
 
-    private static boolean canResolve(RecordKey query) {
-        return "hoge.".equals(query.getDomainName()) && query.isType(RecordType.A_RECORD);
+        response = delegate.resolve(request);
+        injector.cache(response.getAllResourceRecords());
+        return response;
+
     }
 }

@@ -1,26 +1,11 @@
 package kikuko72.app.model.record;
 
-import kikuko72.app.logic.util.BytesTranslator;
 import kikuko72.app.model.record.identifier.RecordKey;
-import kikuko72.app.model.record.identifier.name.RecordName;
-
-import java.net.InetAddress;
-import java.util.Arrays;
 
 public class ResourceRecord {
-	// 試験用なので短めにする
-	private static final byte[] DEFAULT_TTL = new byte[] {0, 0, 0, 60};
 
 	private final RecordKey recordKey;
     private final RecordValue recordValue;
-
-    public ResourceRecord(RecordKey recordKey, InetAddress rData) {
-        this.recordKey = recordKey;
-		this.recordValue = new RecordValue(DEFAULT_TTL,
-                                           BytesTranslator.intToTwoBytes(rData.getAddress().length),
-                                           rData.getAddress()
-        );
-	}
 
 	public ResourceRecord(RecordKey recordKey, RecordValue recordValue) {
         this.recordKey = recordKey;
@@ -49,7 +34,9 @@ public class ResourceRecord {
 		return recordKey.length() + recordValue.length();
 	}
 
-    public  RecordKey getRecordKey() { return  recordKey; }
+    public RecordKey getRecordKey() { return  recordKey; }
+
+    public RecordValue getRecordValue() { return recordValue; }
 
 	public byte[] getType() { return recordKey.getRecordType();	}
 
