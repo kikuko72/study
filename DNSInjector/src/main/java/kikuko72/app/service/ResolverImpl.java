@@ -26,6 +26,7 @@ public class ResolverImpl implements Resolver {
         }
 
         response = delegate.resolve(request);
+        // FIXME 現状マルチスレッドを考慮していない、DNSラウンドロビンを無効化してしまうなどの問題がある
         injector.cache(response.getAllResourceRecords());
         return response;
 
