@@ -10,10 +10,7 @@ import kikuko72.app.model.record.identifier.name.RecordName;
 import kikuko72.app.service.DNS;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * DNSメッセージの圧縮を行うクラスです。
@@ -45,7 +42,7 @@ class DNSMessageCompressor {
                 cursor = putBytes(ret, compressed.bytes(), cursor);
             }
         }
-        return BytesTranslator.trim(ret);
+        return Arrays.copyOfRange(ret, 0, cursor);
     }
 
     private static int putBytes(byte[] buffer, byte[] data, int cursor) {
