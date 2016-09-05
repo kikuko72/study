@@ -2,23 +2,29 @@ package kikuko72.app.main;
 
 import kikuko72.app.logic.util.BytesTranslator;
 import kikuko72.app.model.message.DNSMessage;
-import kikuko72.app.model.record.identifier.RecordKey;
-import kikuko72.app.model.record.identifier.RecordType;
 import kikuko72.app.service.DNS;
 import kikuko72.app.service.Delegate;
-import kikuko72.app.service.Injector;
+import kikuko72.app.service.Resolver;
+import kikuko72.app.service.ResolverImpl;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.List;
 
 
 class DNSInjector {
     private static final String DELEGATE_HOST_KEY = "delegate";
 
+    private static Resolver resolver;
+
 	public static void main(String[] args) throws IOException {
+        // 委譲するDNSサーバーを指定
+        String delegateHost = System.getProperty(DELEGATE_HOST_KEY);
+        InetAddress delegateHostAddress = InetAddress.getByName(delegateHost);
+        Delegate delegate = new Delegate(delegateHostAddress.getAddress());
+        resolver = new ResolverImpl(delegate);
+
 		while (true) {
             serve();
 		}
@@ -30,25 +36,10 @@ class DNSInjector {
         DatagramPacket request = DNS.createReceivePacket();
         serviceSocket.receive(request);
         DNSMessage message = DNSMessage.scan(request.getData());
-        List<RecordKey> queries = message.getQueries();
-        DNSMessage response;
-        if (canResolve(queries.get(0))) { // ひとまず複数の質問のあるメッセージへの対応は保留
-            Injector injector = new Injector();
-            response = injector.resolve(message);
-        } else {
-            // 委譲するDNSサーバーを指定
-            String delegateHost = System.getProperty(DELEGATE_HOST_KEY);
-            InetAddress delegateHostAddress = InetAddress.getByName(delegateHost);
-            Delegate delegate = new Delegate(delegateHostAddress.getAddress());
-            response = delegate.resolve(message);
-        }
+        DNSMessage response = resolver.resolve(message);
         byte[] answer = BytesTranslator.trim(response.bytes());
         DatagramPacket responsePacket = new DatagramPacket(answer, answer.length, request.getSocketAddress());
         serviceSocket.send(responsePacket);
         serviceSocket.close();
-    }
-
-    private static boolean canResolve(RecordKey query) {
-        return "hoge.".equals(query.getDomainName()) && query.isType(RecordType.A_RECORD);
     }
 }
