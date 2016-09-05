@@ -31,6 +31,7 @@ class DNSMessageCompressor {
             List<LabelUnit> labels = compressLabel(ret, cursor, key.getLabels());
             RecordKey compressedKey = key.createCompressedKey(labels);
             if(compressedKey.isType(RecordType.CNAME_RECORD)) {
+                // FIXME 無圧縮のCNameのrDataを圧縮しようとした時圧縮に失敗する
                 cursor = putBytes(ret, compressedKey.bytes(), cursor);
                 cursor = putBytes(ret, record.getTtl(), cursor);
                 cursor = putBytes(ret, record.getRdLength(), cursor);

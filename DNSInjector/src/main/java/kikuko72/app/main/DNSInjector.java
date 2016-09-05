@@ -2,11 +2,11 @@ package kikuko72.app.main;
 
 import kikuko72.app.logic.util.BytesTranslator;
 import kikuko72.app.model.message.DNSMessage;
-import kikuko72.app.model.record.value.RecordValue;
 import kikuko72.app.model.record.ResourceRecord;
 import kikuko72.app.model.record.identifier.RecordClass;
 import kikuko72.app.model.record.identifier.RecordKey;
 import kikuko72.app.model.record.identifier.RecordType;
+import kikuko72.app.model.record.value.RecordValue;
 import kikuko72.app.service.*;
 
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class DNSInjector {
         Delegate delegate = new DelegateImpl(delegateHostAddress.getAddress());
         Map<RecordKey, RecordValue> recordStore = new HashMap<RecordKey, RecordValue>();
         RecordKey hogeIpv4 = new RecordKey("hoge.", RecordType.A_RECORD, RecordClass.INTERNET);
-        RecordValue localhostData = new RecordValue(RecordType.A_RECORD, DEFAULT_TTL, new byte[]{127, 0, 0, 1});
+        RecordValue localhostData = new RecordValue(RecordType.A_RECORD.bytes(), DEFAULT_TTL, new byte[]{127, 0, 0, 1});
         recordStore.put(hogeIpv4, localhostData);
         resolver = new ResolverImpl(delegate, recordStore);
 
@@ -51,7 +51,7 @@ public class DNSInjector {
         serviceSocket.receive(request);
         DNSMessage query = DNSMessage.scan(request.getData());
         DNSMessage response = resolver.resolve(query);
-        byte[] answer = BytesTranslator.trim(response.bytes());
+        byte[] answer = response.bytes();
         SocketAddress clientAddress = request.getSocketAddress();
         DatagramPacket responsePacket = new DatagramPacket(answer, answer.length, clientAddress);
         serviceSocket.send(responsePacket);
@@ -75,7 +75,7 @@ public class DNSInjector {
         for(ResourceRecord answer : answers) {
             int ttl = BytesTranslator.twoBytesToInt(answer.getTtl()) * 0x100 * 0x100
                     + BytesTranslator.twoBytesToInt(answer.getTtl(), 2);
-            System.out.println(" RData: " + Arrays.toString(BytesTranslator.toUnsignedArray(answer.getRData())) + ", TTL: " + ttl);
+            System.out.println(" RData: " + Arrays.toString(BytesTranslator.toUnsignedArray(answer.getRData())) + ", recordType=" + Arrays.toString(answer.getType()) + ", TTL: " + ttl);
         }
         System.out.println();
     }

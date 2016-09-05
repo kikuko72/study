@@ -53,6 +53,8 @@ public class RecordKey {
 
 	public byte[] getRecordType() { return Arrays.copyOf(recordType, RECORD_TYPE_LENGTH); }
 
+    public RecordName getRecordName() { return recordName; }
+
 	public String getDomainName() { return recordName.getDomainName(); }
 
 	public List<LabelUnit> getLabels() { return recordName.getLabels(); }

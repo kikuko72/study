@@ -44,7 +44,7 @@ public class ResolverImplTest {
         DNSMessage queryMessage = DNSMessage.scan(input);
 
         RecordKey hogeIpv4 = new RecordKey("hoge.", RecordType.A_RECORD, RecordClass.INTERNET);
-        RecordValue localhostData = new RecordValue(RecordType.A_RECORD, DNSInjector.DEFAULT_TTL, new byte[]{127, 0, 0, 1});
+        RecordValue localhostData = new RecordValue(RecordType.A_RECORD.bytes(), DNSInjector.DEFAULT_TTL, new byte[]{127, 0, 0, 1});
         Map<RecordKey, RecordValue> recordStore = new HashMap<RecordKey, RecordValue>();
         Resolver resolver = new ResolverImpl(createMockDelegate(hogeIpv4, localhostData), recordStore);
 
@@ -65,6 +65,7 @@ public class ResolverImplTest {
     private Delegate createMockDelegate(RecordKey hogeIpv4, RecordValue localhostData) {
         final Map<RecordKey, RecordValue> recordStore = new HashMap<RecordKey, RecordValue>();
         recordStore.put(hogeIpv4, localhostData);
+        final Injector injector = new Injector(recordStore);
         return new Delegate() {
             boolean isFirst = true;
             @Override
@@ -74,10 +75,7 @@ public class ResolverImplTest {
                 } else {
                     Assert.fail();
                 }
-                RecordKey query = request.getQueries().get(0);
-                ResourceRecord answerRecord = new ResourceRecord(query, recordStore.get(query));
-                ResponseRecords records = new ResponseRecords(Collections.singletonList(answerRecord), Collections.<ResourceRecord>emptyList(), Collections.<ResourceRecord>emptyList());
-                return request.createAnswerMessage(records);
+                return injector.resolve(request);
             }
         };
     }

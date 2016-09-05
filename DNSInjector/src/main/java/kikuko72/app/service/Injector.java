@@ -2,12 +2,14 @@ package kikuko72.app.service;
 
 import kikuko72.app.model.message.DNSMessage;
 import kikuko72.app.model.message.ResponseRecords;
+import kikuko72.app.model.record.identifier.RecordClass;
 import kikuko72.app.model.record.value.RecordValue;
 import kikuko72.app.model.record.ResourceRecord;
 import kikuko72.app.model.record.identifier.RecordKey;
 import kikuko72.app.model.record.identifier.RecordType;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -29,8 +31,16 @@ class Injector implements  Resolver{
         assert query.isType(RecordType.A_RECORD);
         RecordValue answerData = recordStore.get(query);
         if (answerData != null) {
-            ResourceRecord answerRecord = new ResourceRecord(query, answerData);
-            ResponseRecords records = new ResponseRecords(Collections.singletonList(answerRecord), Collections.<ResourceRecord>emptyList(), Collections.<ResourceRecord>emptyList());
+            RecordKey answerKey = new RecordKey(query.getRecordName(), answerData.getRecordType(), RecordClass.INTERNET.bytes());
+            List<ResourceRecord> answerRecords = new ArrayList<ResourceRecord>();
+            answerRecords.add(new ResourceRecord(answerKey, answerData));
+
+            if(RecordType.CNAME_RECORD.isMatch(answerData.getRecordType())) {
+                RecordKey cNameKey = new RecordKey(answerData.getCNameData(), query.getRecordType(), RecordClass.INTERNET.bytes());
+                answerRecords.add(new ResourceRecord(cNameKey, recordStore.get(cNameKey)));
+            }
+
+            ResponseRecords records = new ResponseRecords(answerRecords, Collections.<ResourceRecord>emptyList(), Collections.<ResourceRecord>emptyList());
             return request.createAnswerMessage(records);
         }
         return null;

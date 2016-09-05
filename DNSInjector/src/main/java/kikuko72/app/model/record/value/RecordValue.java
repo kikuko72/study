@@ -1,7 +1,7 @@
 package kikuko72.app.model.record.value;
 
 import kikuko72.app.logic.util.BytesTranslator;
-import kikuko72.app.model.record.identifier.RecordType;
+import kikuko72.app.model.record.identifier.name.RecordName;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -11,17 +11,20 @@ import java.util.Arrays;
  * Created by User on 2016/09/05.
  */
 public class RecordValue {
+    private final byte[] recordType;
     private final byte[] ttl; // 32bit
     private final RData rData;
 
-    private RecordValue(byte[] ttl, RData rData) {
+    private RecordValue(byte[] recordTypes, byte[] ttl, RData rData) {
+        this.recordType = recordTypes;
         this.ttl = ttl;
         this.rData = rData;
     }
 
-    public RecordValue(RecordType recordType, byte[] ttl, byte[] rData) throws IOException {
+    public RecordValue(byte[] recordType, byte[] ttl, byte[] rData) throws IOException {
+        this.recordType = recordType;
         this.ttl = ttl;
-        this.rData = RDataFactory.createRDataObject(recordType.bytes(), rData);
+        this.rData = RDataFactory.scanRData(recordType, rData, 0, rData.length);
     }
 
     /**
@@ -36,13 +39,23 @@ public class RecordValue {
     public static RecordValue scanAs(byte[] recordType, byte[] message, int startOffset) {
         byte[] ttl      = Arrays.copyOfRange(message, startOffset    , startOffset + 4);
         byte[] rdLength = Arrays.copyOfRange(message, startOffset + 4, startOffset + 6);
-        byte[] rData    = Arrays.copyOfRange(message, startOffset + 6, startOffset + 6 + BytesTranslator.twoBytesToInt(rdLength));
-        return new RecordValue(ttl, RDataFactory.createRDataObject(recordType, rData));
+        RData rData     = RDataFactory.scanRData(recordType,
+                                             message, startOffset + 6, startOffset + 6 + BytesTranslator.twoBytesToInt(rdLength));
+        return new RecordValue(recordType, ttl, rData);
+    }
+
+    public RecordName getCNameData() {
+        if(!(rData instanceof  RDataTypeC)) {
+            return null;
+        }
+        return ((RDataTypeC) rData).getRecordName();
     }
 
     public int length() {
         return 4 + 2 + rData.length();
     }
+
+    public byte[] getRecordType() { return recordType; }
 
     public byte[] getTtl() { return Arrays.copyOf(ttl, ttl.length); }
 
