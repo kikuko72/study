@@ -2,7 +2,7 @@ package kikuko72.app.main;
 
 import kikuko72.app.logic.util.BytesTranslator;
 import kikuko72.app.model.message.DNSMessage;
-import kikuko72.app.model.record.RecordValue;
+import kikuko72.app.model.record.value.RecordValue;
 import kikuko72.app.model.record.ResourceRecord;
 import kikuko72.app.model.record.identifier.RecordClass;
 import kikuko72.app.model.record.identifier.RecordKey;
@@ -35,7 +35,7 @@ public class DNSInjector {
         Delegate delegate = new DelegateImpl(delegateHostAddress.getAddress());
         Map<RecordKey, RecordValue> recordStore = new HashMap<RecordKey, RecordValue>();
         RecordKey hogeIpv4 = new RecordKey("hoge.", RecordType.A_RECORD, RecordClass.INTERNET);
-        RecordValue localhostData = new RecordValue(DEFAULT_TTL, new byte[]{0, 4}, new byte[]{127, 0, 0, 1});
+        RecordValue localhostData = new RecordValue(RecordType.A_RECORD, DEFAULT_TTL, new byte[]{127, 0, 0, 1});
         recordStore.put(hogeIpv4, localhostData);
         resolver = new ResolverImpl(delegate, recordStore);
 

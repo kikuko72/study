@@ -2,7 +2,7 @@ package kikuko72.app.service;
 
 import kikuko72.app.main.DNSInjector;
 import kikuko72.app.model.message.DNSMessage;
-import kikuko72.app.model.record.RecordValue;
+import kikuko72.app.model.record.value.RecordValue;
 import kikuko72.app.model.record.identifier.RecordClass;
 import kikuko72.app.model.record.identifier.RecordKey;
 import kikuko72.app.model.record.identifier.RecordType;
@@ -36,7 +36,7 @@ public class InjectorTest {
 
         Map<RecordKey, RecordValue> recordStore = new HashMap<RecordKey, RecordValue>();
         RecordKey hogeIpv4 = new RecordKey("hoge.", RecordType.A_RECORD, RecordClass.INTERNET);
-        RecordValue localhostData = new RecordValue(DNSInjector.DEFAULT_TTL, new byte[]{0, 4}, new byte[]{127, 0, 0, 1});
+        RecordValue localhostData = new RecordValue(RecordType.A_RECORD, DNSInjector.DEFAULT_TTL, new byte[]{127, 0, 0, 1});
         recordStore.put(hogeIpv4, localhostData);
         Resolver injector = new Injector(recordStore);
         DNSMessage actual = injector.resolve(queryMessage);

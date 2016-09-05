@@ -1,6 +1,9 @@
 package kikuko72.app.model.record;
 
 import kikuko72.app.model.record.identifier.RecordKey;
+import kikuko72.app.model.record.value.RecordValue;
+
+import java.io.IOException;
 
 public class ResourceRecord {
 
@@ -26,7 +29,7 @@ public class ResourceRecord {
      */
 	public static ResourceRecord scanStart(byte[] message, int startOffset) {
 		RecordKey recordKey = RecordKey.scanStart(message, startOffset);
-        RecordValue recordValue = RecordValue.scanStart(message, startOffset + recordKey.length());
+        RecordValue recordValue = RecordValue.scanAs(recordKey.getRecordType(), message, startOffset + recordKey.length());
         return new ResourceRecord(recordKey, recordValue);
 	}
 
@@ -44,7 +47,7 @@ public class ResourceRecord {
 
     public byte[] getRdLength() { return recordValue.getRdLength(); }
 
-	public byte[] getRData() { return recordValue.getRData(); }
+	public byte[] getRData() { return recordValue.getBinaryRData(); }
 
 	public byte[] bytes() {
 		byte[] ret = new byte[length()];

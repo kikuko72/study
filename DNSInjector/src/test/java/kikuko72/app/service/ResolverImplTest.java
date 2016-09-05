@@ -3,7 +3,7 @@ package kikuko72.app.service;
 import kikuko72.app.main.DNSInjector;
 import kikuko72.app.model.message.DNSMessage;
 import kikuko72.app.model.message.ResponseRecords;
-import kikuko72.app.model.record.RecordValue;
+import kikuko72.app.model.record.value.RecordValue;
 import kikuko72.app.model.record.ResourceRecord;
 import kikuko72.app.model.record.identifier.RecordClass;
 import kikuko72.app.model.record.identifier.RecordKey;
@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by User on 2016/09/05.
@@ -46,7 +44,7 @@ public class ResolverImplTest {
         DNSMessage queryMessage = DNSMessage.scan(input);
 
         RecordKey hogeIpv4 = new RecordKey("hoge.", RecordType.A_RECORD, RecordClass.INTERNET);
-        RecordValue localhostData = new RecordValue(DNSInjector.DEFAULT_TTL, new byte[]{0, 4}, new byte[]{127, 0, 0, 1});
+        RecordValue localhostData = new RecordValue(RecordType.A_RECORD, DNSInjector.DEFAULT_TTL, new byte[]{127, 0, 0, 1});
         Map<RecordKey, RecordValue> recordStore = new HashMap<RecordKey, RecordValue>();
         Resolver resolver = new ResolverImpl(createMockDelegate(hogeIpv4, localhostData), recordStore);
 

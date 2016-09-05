@@ -1,7 +1,7 @@
 package kikuko72.app.service;
 
 import kikuko72.app.model.message.DNSMessage;
-import kikuko72.app.model.record.RecordValue;
+import kikuko72.app.model.record.value.RecordValue;
 import kikuko72.app.model.record.identifier.RecordKey;
 
 import java.io.IOException;
