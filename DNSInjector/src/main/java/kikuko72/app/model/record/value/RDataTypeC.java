@@ -30,4 +30,20 @@ class RDataTypeC implements RData {
     public byte[] bytes() {
         return recordName.bytes();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RDataTypeC that = (RDataTypeC) o;
+
+        return recordName.equals(that.recordName);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return recordName.hashCode();
+    }
 }

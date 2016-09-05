@@ -1,14 +1,14 @@
 package kikuko72.app.main;
 
 import kikuko72.app.logic.util.BytesTranslator;
+import kikuko72.app.logic.util.HostsReader;
 import kikuko72.app.model.message.DNSMessage;
 import kikuko72.app.model.record.ResourceRecord;
-import kikuko72.app.model.record.identifier.RecordClass;
 import kikuko72.app.model.record.identifier.RecordKey;
-import kikuko72.app.model.record.identifier.RecordType;
 import kikuko72.app.model.record.value.RecordValue;
 import kikuko72.app.service.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -22,6 +22,7 @@ import java.util.Map;
 
 public class DNSInjector {
     private static final String DELEGATE_HOST_KEY = "delegate";
+    private static final String HOSTS_PATH_KEY = "hosts";
 
     // 試験用なので短めにする
     public static final byte[] DEFAULT_TTL = new byte[] {0, 0, 0, 60};
@@ -33,10 +34,20 @@ public class DNSInjector {
         String delegateHost = System.getProperty(DELEGATE_HOST_KEY);
         InetAddress delegateHostAddress = InetAddress.getByName(delegateHost);
         Delegate delegate = new DelegateImpl(delegateHostAddress.getAddress());
-        Map<RecordKey, RecordValue> recordStore = new HashMap<RecordKey, RecordValue>();
-        RecordKey hogeIpv4 = new RecordKey("hoge.", RecordType.A_RECORD, RecordClass.INTERNET);
-        RecordValue localhostData = new RecordValue(RecordType.A_RECORD.bytes(), DEFAULT_TTL, new byte[]{127, 0, 0, 1});
-        recordStore.put(hogeIpv4, localhostData);
+        Map<RecordKey, RecordValue> recordStore;
+        String hostsFilePath = System.getProperty(HOSTS_PATH_KEY);
+        try {
+            if (hostsFilePath != null) {
+                File hosts = new File(hostsFilePath);
+                recordStore = HostsReader.parseHosts(hosts.toURI().toURL().openStream());
+            } else {
+                recordStore = new HashMap<RecordKey, RecordValue>();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            recordStore = new HashMap<RecordKey, RecordValue>();
+        }
         resolver = new ResolverImpl(delegate, recordStore);
 
 		while (true) {

@@ -29,4 +29,20 @@ class RawRData implements  RData {
     public byte[] bytes() {
         return Arrays.copyOf(rData, rData.length);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RawRData rawRData = (RawRData) o;
+
+        return Arrays.equals(rData, rawRData.rData);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(rData);
+    }
 }

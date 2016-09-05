@@ -31,4 +31,20 @@ class RDataTypeA implements RData {
     public byte[] bytes() {
         return inetAddress.getAddress();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RDataTypeA that = (RDataTypeA) o;
+
+        return inetAddress.equals(that.inetAddress);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return inetAddress.hashCode();
+    }
 }

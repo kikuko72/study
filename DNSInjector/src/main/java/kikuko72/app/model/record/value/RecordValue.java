@@ -70,4 +70,25 @@ public class RecordValue {
         System.arraycopy(    rData.bytes(), 0, ret, 6, rData.length());
         return ret;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RecordValue that = (RecordValue) o;
+
+        if (!Arrays.equals(recordType, that.recordType)) return false;
+        if (!Arrays.equals(ttl, that.ttl)) return false;
+        return rData.equals(that.rData);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Arrays.hashCode(recordType);
+        result = 31 * result + Arrays.hashCode(ttl);
+        result = 31 * result + rData.hashCode();
+        return result;
+    }
 }
