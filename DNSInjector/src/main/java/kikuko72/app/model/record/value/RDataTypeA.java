@@ -1,7 +1,5 @@
 package kikuko72.app.model.record.value;
 
-import kikuko72.app.logic.util.BytesTranslator;
-
 import java.net.InetAddress;
 
 /**

@@ -3,8 +3,6 @@ package kikuko72.app.model.record;
 import kikuko72.app.model.record.identifier.RecordKey;
 import kikuko72.app.model.record.value.RecordValue;
 
-import java.io.IOException;
-
 public class ResourceRecord {
 
 	private final RecordKey recordKey;
