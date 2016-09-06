@@ -2,11 +2,11 @@ package kikuko72.app.service;
 
 import kikuko72.app.model.message.DNSMessage;
 import kikuko72.app.model.message.ResponseRecords;
-import kikuko72.app.model.record.identifier.RecordClass;
+import kikuko72.app.model.record.identifier.Class;
 import kikuko72.app.model.record.value.RecordValue;
 import kikuko72.app.model.record.ResourceRecord;
 import kikuko72.app.model.record.identifier.RecordKey;
-import kikuko72.app.model.record.identifier.RecordType;
+import kikuko72.app.model.record.identifier.Type;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,16 +27,17 @@ class Injector implements  Resolver{
         // ひとまず複数の質問のあるメッセージへの対応は保留
         RecordKey query = request.getQueries().get(0);
 
-        // まだAレコードにしか回答できない
-        assert query.isType(RecordType.A_RECORD);
+        // AレコードとCレコードに回答可能
         RecordValue answerData = recordStore.get(query);
         if (answerData != null) {
-            RecordKey answerKey = new RecordKey(query.getRecordName(), answerData.getRecordType(), RecordClass.INTERNET.bytes());
+            // 応答リソースレコードのタイプがanswerDataと一致するようRecordKeyを再作成
+            RecordKey answerKey = new RecordKey(query.getRecordName(), answerData.getRecordType(), Class.INTERNET);
             List<ResourceRecord> answerRecords = new ArrayList<ResourceRecord>();
             answerRecords.add(new ResourceRecord(answerKey, answerData));
 
-            if(RecordType.CNAME_RECORD.isMatch(answerData.getRecordType())) {
-                RecordKey cNameKey = new RecordKey(answerData.getCNameData(), query.getRecordType(), RecordClass.INTERNET.bytes());
+            if(Type.C_NAME == answerData.getRecordType()) {
+                // CNameをキーにしてあらためて要求レコードタイプでレコードを取得する
+                RecordKey cNameKey = new RecordKey(answerData.getCNameData(), query.getRecordType(), Class.INTERNET);
                 answerRecords.add(new ResourceRecord(cNameKey, recordStore.get(cNameKey)));
             }
 

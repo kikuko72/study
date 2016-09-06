@@ -1,6 +1,7 @@
-package kikuko72.app.model.record.identifier.name;
+package kikuko72.app.model.message;
 
 import kikuko72.app.logic.util.BytesTranslator;
+import kikuko72.app.model.record.identifier.name.LabelUnit;
 
 import java.util.List;
 
@@ -11,16 +12,16 @@ import java.util.List;
  * そのためこのクラスのインスタンスの生成にはこのラベル以前のDNSメッセージの情報を必要とします。
  * Created by User on 2016/07/03.
  */
-public class PointerLabel implements LabelUnit {
+class PointerLabel implements LabelUnit {
 
-    public static final int MINIMUM_POINTER_HEAD = 0xc0;
+    static final int MINIMUM_POINTER_HEAD = 0xc0;
 
     private final int pointOffset;
     private final List<LabelUnit> labelSequence;
 
-    public PointerLabel(byte[] message, int pointOffset) {
+    PointerLabel(byte[] message, int pointOffset) {
         this.pointOffset = pointOffset;
-        labelSequence = LabelFactory.scanStart(message, pointOffset);
+        labelSequence = LabelConverter.scanStart(message, pointOffset);
     }
 
     @Override

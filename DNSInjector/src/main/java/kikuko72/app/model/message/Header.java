@@ -18,7 +18,7 @@ class Header {
 	private final int nsCount; // 16bit
 	private final int arCount; // 16bit
 
-    private Header(int id, Flag flag, int qdCount, int anCount, int nsCount, int arCount) {
+    Header(int id, Flag flag, int qdCount, int anCount, int nsCount, int arCount) {
         this.id = id;
         this.flag = flag;
         this.qdCount = qdCount;

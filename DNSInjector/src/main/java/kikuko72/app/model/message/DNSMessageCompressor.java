@@ -3,9 +3,8 @@ package kikuko72.app.model.message;
 import kikuko72.app.logic.util.BytesTranslator;
 import kikuko72.app.model.record.ResourceRecord;
 import kikuko72.app.model.record.identifier.RecordKey;
-import kikuko72.app.model.record.identifier.RecordType;
+import kikuko72.app.model.record.identifier.Type;
 import kikuko72.app.model.record.identifier.name.LabelUnit;
-import kikuko72.app.model.record.identifier.name.PointerLabel;
 import kikuko72.app.model.record.identifier.name.RecordName;
 import kikuko72.app.service.DNS;
 
@@ -30,10 +29,11 @@ class DNSMessageCompressor {
             RecordKey key = record.getRecordKey();
             List<LabelUnit> labels = compressLabel(ret, cursor, key.getLabels());
             RecordKey compressedKey = key.createCompressedKey(labels);
-            if(compressedKey.isType(RecordType.CNAME_RECORD)) {
+            assert key.getRecordType().equals(record.getRecordValue().getRecordType());
+            if(compressedKey.isType(Type.C_NAME)) {
                 cursor = putBytes(ret, compressedKey.bytes(), cursor);
                 cursor = putBytes(ret, record.getTtl(), cursor);
-                RecordName name = RecordName.scanStart(record.getRData(), 0);
+                RecordName name = record.getRecordValue().getCNameData();
                 byte[] compressedLabel = new RecordName(compressLabel(ret, cursor, name.getLabels())).bytes();
                 cursor = putBytes(ret, BytesTranslator.intToTwoBytes(compressedLabel.length), cursor);
                 cursor = putBytes(ret, compressedLabel, cursor);

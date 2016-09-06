@@ -1,6 +1,7 @@
-package kikuko72.app.model.record.value;
+package kikuko72.app.model.message;
 
 import kikuko72.app.logic.util.BytesTranslator;
+import kikuko72.app.model.record.value.RData;
 
 import java.util.Arrays;
 
@@ -8,7 +9,7 @@ import java.util.Arrays;
  * 未実装のタイプのRData用のクラスです
  * Created by User on 2016/09/05.
  */
-class RawRData implements  RData {
+class RawRData implements RData {
     private final byte[] rData; // 可変長(IPv4レコードなら32bit)
 
     RawRData(byte[] rData) {

@@ -1,19 +1,23 @@
 package kikuko72.app.model.record.identifier.name;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * リソースレコード中のドメイン名の一部を構成するラベルを表現するクラスです。
  * このクラスは不変クラスとしてデザインされています。
  * Created by User on 2016/06/26.
  */
-class NameLabel implements  LabelUnit {
+public class NameLabel implements  LabelUnit {
     private final byte head;
     private final byte[] tail;
 
-    static final byte EMPTY_HEAD = 0x00;
+    public static final byte EMPTY_HEAD = 0x00;
+    public static final LabelUnit EMPTY_LABEL = new NameLabel(NameLabel.EMPTY_HEAD, new byte[]{});
 
-    NameLabel(byte head, byte[] tail) {
+    public NameLabel(byte head, byte[] tail) {
         this.head = head;
         this.tail = tail;
     }

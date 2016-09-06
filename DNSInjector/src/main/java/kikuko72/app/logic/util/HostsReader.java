@@ -1,8 +1,8 @@
 package kikuko72.app.logic.util;
 
-import kikuko72.app.model.record.identifier.RecordClass;
+import kikuko72.app.model.record.identifier.Class;
 import kikuko72.app.model.record.identifier.RecordKey;
-import kikuko72.app.model.record.identifier.RecordType;
+import kikuko72.app.model.record.identifier.Type;
 import kikuko72.app.model.record.identifier.name.RecordName;
 import kikuko72.app.model.record.value.RecordValue;
 
@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,23 +33,26 @@ public class HostsReader {
             if(tokens.length < 2) {
                 continue;
             }
-            String domainName = tokens[1].endsWith(".") ? tokens[1] : tokens[1] + ".";
-            RecordKey recordKey = new RecordKey(domainName, RecordType.A_RECORD, RecordClass.INTERNET);
+            String domainName = completeSuffix(tokens[1]);
+            RecordKey recordKey = new RecordKey(domainName, Type.A, Class.INTERNET);
             if (recordStore.get(recordKey) == null) {
-                RecordValue recordValue = new RecordValue(RecordType.A_RECORD.bytes(),
-                        DEFAULT_TTL,
-                        InetAddress.getByName(tokens[0]).getAddress());
+                RecordValue recordValue = new RecordValue(DEFAULT_TTL,
+                        (Inet4Address)InetAddress.getByName(tokens[0]));
                 recordStore.put(recordKey, recordValue);
             }
             if(tokens.length > 2) {
-                RecordName cName = new RecordName(tokens[1]);
+                RecordName cName = new RecordName(domainName);
                 for(String alias : Arrays.copyOfRange(tokens, 2, tokens.length)) {
-                    String aliasDomainName = alias.endsWith(".") ? alias : alias + ".";
-                    recordStore.put(new RecordKey(aliasDomainName, RecordType.A_RECORD, RecordClass.INTERNET),
-                                    new RecordValue(RecordType.CNAME_RECORD.bytes(), DEFAULT_TTL, cName.bytes()));
+                    String aliasDomainName = completeSuffix(alias);
+                    recordStore.put(new RecordKey(aliasDomainName, Type.A, Class.INTERNET),
+                                    new RecordValue(DEFAULT_TTL, cName));
                 }
             }
         }
         return recordStore;
+    }
+
+    private static String completeSuffix(String domainName) {
+        return domainName.endsWith(".") ? domainName : domainName + ".";
     }
 }

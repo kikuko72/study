@@ -15,43 +15,28 @@ public class RecordKey {
 	private static final int RECORD_CLASS_LENGTH = 2; // 質問クラス: 16bit
 
 	private final RecordName recordName;
-	private final byte[] recordType;
-	private final byte[] recordClass;
+	private final RecordType recordType;
+	private final RecordClass recordClass;
+
+    public RecordKey(RecordName recordName, RecordType recordType, RecordClass recordClass) {
+        this.recordName = recordName;
+        this.recordType = recordType;
+        this.recordClass = recordClass;
+    }
 
     public RecordKey(String domainName, RecordType recordType, RecordClass recordClass) {
         this.recordName = new RecordName(domainName);
-        this.recordType = recordType.bytes();
-        this.recordClass = recordClass.bytes();
+        this.recordType = recordType;
+        this.recordClass = recordClass;
     }
-
-    public RecordKey(RecordName recordName, byte[] recordType, byte[] recordClass) {
-		this.recordName = recordName;
-		this.recordType = recordType;
-		this.recordClass = recordClass;
-	}
-
-	/**
-	 * バイト配列の指定の位置からRecordKey1つ分として解釈できる範囲までを読み取り、
-	 * 新しいインスタンスを生成します。残りの情報は無視されますが、
-	 * 開始位置より前の情報を参照することがあるため、入力にはDNSメッセージ全体を必要とします。
-	 * @param message DNSメッセージ全体のバイト配列
-	 * @param startOffset 読み取り開始位置
-	 * @return RecordKeyのインスタンス
-	 */
-	public static RecordKey scanStart(byte[] message, int startOffset) {
-		RecordName recordName = RecordName.scanStart(message, startOffset);
-		byte[] recordType  = Arrays.copyOfRange(message, startOffset + recordName.length()                     , startOffset + recordName.length() + RECORD_TYPE_LENGTH);
-		byte[] recordClass = Arrays.copyOfRange(message, startOffset + recordName.length() + RECORD_TYPE_LENGTH, startOffset + recordName.length() + RECORD_TYPE_LENGTH + RECORD_CLASS_LENGTH);
-		return new RecordKey(recordName, recordType, recordClass);
-	}
 
     public RecordKey createCompressedKey(List<LabelUnit> compressedLabels) {
         return new RecordKey(new RecordName(compressedLabels), recordType, recordClass);
     }
 
-	public boolean isType(RecordType type) {return type.isMatch(this.recordType); }
+	public boolean isType(RecordType type) {return type.equals(this.recordType); }
 
-	public byte[] getRecordType() { return Arrays.copyOf(recordType, RECORD_TYPE_LENGTH); }
+	public RecordType getRecordType() { return recordType; }
 
     public RecordName getRecordName() { return recordName; }
 
@@ -65,17 +50,17 @@ public class RecordKey {
 
 	public byte[] bytes() {
 		byte[] ret = new byte[recordName.length() + RECORD_TYPE_LENGTH + RECORD_CLASS_LENGTH];
-		System.arraycopy(recordName.bytes(), 0, ret,                                        0, recordName.length());
-		System.arraycopy(        recordType, 0, ret, recordName.length()                     , RECORD_TYPE_LENGTH );
-		System.arraycopy(       recordClass, 0, ret, recordName.length() + RECORD_TYPE_LENGTH, RECORD_CLASS_LENGTH);
+		System.arraycopy( recordName.bytes(), 0, ret,                                        0, recordName.length());
+		System.arraycopy( recordType.bytes(), 0, ret, recordName.length()                     , RECORD_TYPE_LENGTH );
+		System.arraycopy(recordClass.bytes(), 0, ret, recordName.length() + RECORD_TYPE_LENGTH, RECORD_CLASS_LENGTH);
 		return ret;
 	}
 
     @Override
     public String toString() {
         return  "domainName=" + recordName.getDomainName() +
-                ", recordType=" + Arrays.toString(recordType) +
-                ", recordClass=" + Arrays.toString(recordClass);
+                ", recordType=" + recordType +
+                ", recordClass=" + recordClass;
     }
 
     @Override
@@ -86,16 +71,16 @@ public class RecordKey {
         RecordKey recordKey = (RecordKey) o;
 
         if (!recordName.equals(recordKey.recordName)) return false;
-        if (!Arrays.equals(recordType, recordKey.recordType)) return false;
-        return Arrays.equals(recordClass, recordKey.recordClass);
+        if (!recordType.equals(recordKey.recordType)) return false;
+        return recordClass.equals(recordKey.recordClass);
 
     }
 
     @Override
     public int hashCode() {
         int result = recordName.hashCode();
-        result = 31 * result + Arrays.hashCode(recordType);
-        result = 31 * result + Arrays.hashCode(recordClass);
+        result = 31 * result + recordType.hashCode();
+        result = 31 * result + recordClass.hashCode();
         return result;
     }
 }

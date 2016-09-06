@@ -7,10 +7,10 @@ import kikuko72.app.model.record.identifier.name.RecordName;
  * タイプCのRDataクラスです
  * Created by User on 2016/09/05.
  */
-class RDataTypeC implements RData {
+public class RDataTypeC implements RData {
     private final RecordName recordName;
 
-    RDataTypeC(RecordName recordName) {
+    public RDataTypeC(RecordName recordName) {
         this.recordName = recordName;
     }
 

@@ -15,7 +15,7 @@ public class DNSMessage {
 	private final List<RecordKey> queries;
 	private final ResponseRecords records;
 
-	private DNSMessage(Header header, List<RecordKey> queries, ResponseRecords records) {
+	DNSMessage(Header header, List<RecordKey> queries, ResponseRecords records) {
 		this.header = header;
 		this.queries = new ArrayList<RecordKey>(queries);
 		this.records = records;
@@ -28,19 +28,7 @@ public class DNSMessage {
      * @return DNSMessageのインスタンス
      */
     public static DNSMessage scan(byte[] input) {
-        Header header = Header.scan(input);
-
-        int cursor = Header.DEFINITE_LENGTH;
-        List<RecordKey> queries = new ArrayList<RecordKey>();
-        for (int i = 0; i < header.getQdCount(); i++) {
-            RecordKey query   =  RecordKey.scanStart(input, cursor);
-            queries.add(query);
-            cursor += query.length();
-        }
-
-        ResponseRecords records = ResponseRecords.scanAsRecords(input, cursor, header);
-
-        return new DNSMessage(header, queries, records);
+        return DNSMessageScanner.scan(input);
     }
 
     public DNSMessage createAnswerMessage(ResponseRecords records) {

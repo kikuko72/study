@@ -1,6 +1,8 @@
-package kikuko72.app.model.record.identifier.name;
+package kikuko72.app.model.message;
 
 import kikuko72.app.logic.util.BytesTranslator;
+import kikuko72.app.model.record.identifier.name.LabelUnit;
+import kikuko72.app.model.record.identifier.name.NameLabel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,19 +12,7 @@ import java.util.List;
  * バイト配列の指定の位置をラベル列の開始位置として読み取るためのクラスです。
  * Created by User on 2016/07/03.
  */
-class LabelFactory {
-    private static final LabelUnit EMPTY_LABEL = new NameLabel(NameLabel.EMPTY_HEAD, new byte[]{});
-
-    static List<LabelUnit> toLabel(String domainName) {
-        List<LabelUnit> labels = new ArrayList<LabelUnit>();
-        for(String part : domainName.split("\\.")) {
-            if(part.length() == 0) { break; }
-            LabelUnit label = new NameLabel((byte)part.length(), part.getBytes());
-            labels.add(label);
-        }
-        labels.add(EMPTY_LABEL);
-        return labels;
-    }
+class LabelConverter {
 
     /**
      * バイト配列の指定の位置からラベル列として解釈できる範囲までを読み取り、
@@ -32,12 +22,12 @@ class LabelFactory {
      * @param startOffset 読み取り開始位置
      * @return LabelUnitのリスト
      */
-    static List<LabelUnit> scanStart(byte[] message, int startOffset) {
+    public static List<LabelUnit> scanStart(byte[] message, int startOffset) {
         int cursor = startOffset;
         List<LabelUnit> labels = new ArrayList<LabelUnit>();
         LabelUnit label;
         do {
-            label = LabelFactory.scanALabel(message, cursor);
+            label = LabelConverter.scanALabel(message, cursor);
             labels.add(label);
             cursor += label.length();
         } while (label.hasNextLabel());
@@ -47,7 +37,7 @@ class LabelFactory {
     private static LabelUnit scanALabel(byte[] message, int startOffset) {
         byte headValue = message[startOffset];
         if (headValue == NameLabel.EMPTY_HEAD) {
-            return EMPTY_LABEL;
+            return NameLabel.EMPTY_LABEL;
         } else if (BytesTranslator.unSign(headValue) >= PointerLabel.MINIMUM_POINTER_HEAD) {
             int pointOffset = (BytesTranslator.unSign(headValue) - PointerLabel.MINIMUM_POINTER_HEAD) * 0x100
                             + BytesTranslator.unSign(message[startOffset + 1]);

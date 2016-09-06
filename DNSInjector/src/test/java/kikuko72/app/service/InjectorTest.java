@@ -4,12 +4,14 @@ import kikuko72.app.main.DNSInjector;
 import kikuko72.app.model.message.DNSMessage;
 import kikuko72.app.model.record.identifier.name.RecordName;
 import kikuko72.app.model.record.value.RecordValue;
-import kikuko72.app.model.record.identifier.RecordClass;
+import kikuko72.app.model.record.identifier.Class;
 import kikuko72.app.model.record.identifier.RecordKey;
-import kikuko72.app.model.record.identifier.RecordType;
+import kikuko72.app.model.record.identifier.Type;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,8 +38,9 @@ public class InjectorTest {
         DNSMessage queryMessage = DNSMessage.scan(input);
 
         Map<RecordKey, RecordValue> recordStore = new HashMap<RecordKey, RecordValue>();
-        RecordKey hogeIpv4 = new RecordKey("hoge.", RecordType.A_RECORD, RecordClass.INTERNET);
-        RecordValue localhostData = new RecordValue(RecordType.A_RECORD.bytes(), DNSInjector.DEFAULT_TTL, new byte[]{127, 0, 0, 1});
+        RecordKey hogeIpv4 = new RecordKey("hoge.", Type.A, Class.INTERNET);
+        Inet4Address localhost = (Inet4Address)InetAddress.getByAddress(new byte[]{127, 0, 0, 1});
+        RecordValue localhostData = new RecordValue(DNSInjector.DEFAULT_TTL, localhost);
         recordStore.put(hogeIpv4, localhostData);
         Resolver injector = new Injector(recordStore);
         DNSMessage actual = injector.resolve(queryMessage);
@@ -78,12 +81,13 @@ public class InjectorTest {
         DNSMessage queryMessage = DNSMessage.scan(input);
 
         Map<RecordKey, RecordValue> recordStore = new HashMap<RecordKey, RecordValue>();
-        RecordKey fooIpv4 = new RecordKey("foo.jp.", RecordType.A_RECORD, RecordClass.INTERNET);
-        RecordValue localhostData = new RecordValue(RecordType.A_RECORD.bytes(), DNSInjector.DEFAULT_TTL, new byte[]{127, 0, 0, 1});
+        RecordKey fooIpv4 = new RecordKey("foo.jp.", Type.A, Class.INTERNET);
+        Inet4Address localhost = (Inet4Address)InetAddress.getByAddress(new byte[]{127, 0, 0, 1});
+        RecordValue localhostData = new RecordValue(DNSInjector.DEFAULT_TTL, localhost);
         recordStore.put(fooIpv4, localhostData);
 
-        RecordKey barKey = new RecordKey("bar.jp.", RecordType.A_RECORD, RecordClass.INTERNET);
-        RecordValue fooValue = new RecordValue(RecordType.CNAME_RECORD.bytes(), DNSInjector.DEFAULT_TTL, new RecordName("foo.jp.").bytes());
+        RecordKey barKey = new RecordKey("bar.jp.", Type.A, Class.INTERNET);
+        RecordValue fooValue = new RecordValue(DNSInjector.DEFAULT_TTL, new RecordName("foo.jp."));
         recordStore.put(barKey, fooValue);
 
         Resolver injector = new Injector(recordStore);

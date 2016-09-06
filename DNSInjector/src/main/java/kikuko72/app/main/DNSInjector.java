@@ -86,7 +86,7 @@ public class DNSInjector {
         for(ResourceRecord answer : answers) {
             int ttl = BytesTranslator.twoBytesToInt(answer.getTtl()) * 0x100 * 0x100
                     + BytesTranslator.twoBytesToInt(answer.getTtl(), 2);
-            System.out.println(" RData: " + Arrays.toString(BytesTranslator.toUnsignedArray(answer.getRData())) + ", recordType=" + Arrays.toString(answer.getType()) + ", TTL: " + ttl);
+            System.out.println(" RData: " + Arrays.toString(BytesTranslator.toUnsignedArray(answer.getRData())) + ", recordType=" + answer.getType() + ", TTL: " + ttl);
         }
         System.out.println();
     }

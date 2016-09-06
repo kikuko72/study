@@ -14,7 +14,7 @@ public class RecordName {
     private final String domainName;
 
     public RecordName(String domainName) {
-        this.labels = LabelFactory.toLabel(domainName);
+        this.labels = toLabel(domainName);
         this.domainName = domainName;
     }
 
@@ -23,16 +23,15 @@ public class RecordName {
         domainName = joinDomainName(labels);
     }
 
-    /**
-     * バイト配列の指定の位置からレコード名1つ分として解釈できる範囲までを読み取り、
-     * 新しいインスタンスを生成します。残りの情報は無視されますが、
-     * 開始位置より前の情報を参照することがあるため、入力にはDNSメッセージ全体を必要とします。
-     * @param message DNSメッセージ全体のバイト配列
-     * @param startOffset 読み取り開始位置
-     * @return RecordNameのインスタンス
-     */
-    public static RecordName scanStart(byte[] message, int startOffset) {
-        return new RecordName(LabelFactory.scanStart(message, startOffset));
+    static List<LabelUnit> toLabel(String domainName) {
+        List<LabelUnit> labels = new ArrayList<LabelUnit>();
+        for(String part : domainName.split("\\.")) {
+            if(part.length() == 0) { break; }
+            LabelUnit label = new NameLabel((byte)part.length(), part.getBytes());
+            labels.add(label);
+        }
+        labels.add(NameLabel.EMPTY_LABEL);
+        return labels;
     }
 
     public String getDomainName() {
