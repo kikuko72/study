@@ -31,13 +31,12 @@ class DNSMessageCompressor {
             List<LabelUnit> labels = compressLabel(ret, cursor, key.getLabels());
             RecordKey compressedKey = key.createCompressedKey(labels);
             if(compressedKey.isType(RecordType.CNAME_RECORD)) {
-                // FIXME 無圧縮のCNameのrDataを圧縮しようとした時圧縮に失敗する
                 cursor = putBytes(ret, compressedKey.bytes(), cursor);
                 cursor = putBytes(ret, record.getTtl(), cursor);
-                cursor = putBytes(ret, record.getRdLength(), cursor);
                 RecordName name = RecordName.scanStart(record.getRData(), 0);
-                List<LabelUnit> compressedData = compressLabel(ret, cursor, name.getLabels());
-                cursor = putBytes(ret, new RecordName(compressedData).bytes(), cursor);
+                byte[] compressedLabel = new RecordName(compressLabel(ret, cursor, name.getLabels())).bytes();
+                cursor = putBytes(ret, BytesTranslator.intToTwoBytes(compressedLabel.length), cursor);
+                cursor = putBytes(ret, compressedLabel, cursor);
             } else {
                 ResourceRecord compressed = record.createCompressedRecord(compressedKey);
                 cursor = putBytes(ret, compressed.bytes(), cursor);

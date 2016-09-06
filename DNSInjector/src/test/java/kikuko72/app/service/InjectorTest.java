@@ -111,8 +111,6 @@ public class InjectorTest {
                 0x0, 0x4, // Data length: 4
                 0x7f, 0x0, 0x0, 0x1 // 127.0.0.1
         };
-
-        byte[] actualBytes = actual.bytes();
         assertArrayEquals(expectedBytes, actual.bytes());
     }
 

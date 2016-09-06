@@ -189,7 +189,7 @@ public class DNSMessageCompressorTest {
                 0x0, 0x5, // Type: C NAME
                 0x0, 0x1, // Class: IN
                 0x0, 0x0, 0x0, 0x3c, // Time to live: 60
-                0x0, 0xb, // Data length: 11
+                0x0, 0x2, // Data length: 11
                 (byte)0xc0, (byte)0x1b, // ここが圧縮される
         };
 
