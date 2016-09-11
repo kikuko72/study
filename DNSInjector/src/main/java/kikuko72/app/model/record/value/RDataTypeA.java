@@ -30,6 +30,15 @@ public class RDataTypeA implements RData {
         return inetAddress.getAddress();
     }
 
+    public InetAddress getInetAddress() {
+        return inetAddress;
+    }
+
+    @Override
+    public String toString() {
+        return "address=" + inetAddress;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

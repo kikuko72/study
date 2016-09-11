@@ -3,6 +3,7 @@ package kikuko72.app.service;
 import kikuko72.app.model.message.DNSMessage;
 import kikuko72.app.model.record.identifier.Type;
 import kikuko72.app.model.record.ResourceRecord;
+import kikuko72.app.model.record.value.RDataTypeA;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -53,7 +54,7 @@ public class DelegateImplTest {
         for(ResourceRecord record : answer.getAllResourceRecords()) {
             if (Type.A == record.getType()) {
                 result = record;
-                InetAddress actual = InetAddress.getByAddress(result.getRData());
+                InetAddress actual = ((RDataTypeA)result.getRData()).getInetAddress();
                 assertEquals(expected, actual);
                 return;
             }

@@ -2,6 +2,7 @@ package kikuko72.app.model.record;
 
 import kikuko72.app.model.record.identifier.RecordKey;
 import kikuko72.app.model.record.identifier.RecordType;
+import kikuko72.app.model.record.value.RData;
 import kikuko72.app.model.record.value.RecordValue;
 
 import java.util.Arrays;
@@ -35,7 +36,7 @@ public class ResourceRecord {
 
     public byte[] getRdLength() { return recordValue.getRdLength(); }
 
-	public byte[] getRData() { return recordValue.getBinaryRData(); }
+	public RData getRData() { return recordValue.getRData(); }
 
 	public byte[] bytes() {
 		byte[] ret = new byte[length()];

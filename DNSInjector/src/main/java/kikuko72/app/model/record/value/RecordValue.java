@@ -51,7 +51,7 @@ public class RecordValue {
 
     public byte[] getRdLength() { return rData.rdLength(); }
 
-    public byte[] getBinaryRData() { return rData.bytes(); }
+    public RData getRData() { return rData; }
 
     public byte[] bytes() {
         byte[] ret = new byte[length()];
