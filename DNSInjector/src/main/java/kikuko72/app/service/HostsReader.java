@@ -1,4 +1,4 @@
-package kikuko72.app.logic.util;
+package kikuko72.app.service;
 
 import kikuko72.app.model.record.identifier.Class;
 import kikuko72.app.model.record.identifier.RecordKey;
@@ -15,17 +15,18 @@ import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * hostsファイルを読み込んで連想配列を生成するクラスです
  * Created by User on 2016/09/06.
  */
-public class HostsReader {
+class HostsReader {
     // 試験用なので短めにする
-    public static final byte[] DEFAULT_TTL = new byte[] {0, 0, 0, 60};
+    static final byte[] DEFAULT_TTL = new byte[] {0, 0, 0, 60};
 
-    public static Map<RecordKey, RecordValue> parseHosts(InputStream stream) throws IOException {
-        Map<RecordKey, RecordValue> recordStore = new HashMap<RecordKey, RecordValue>();
+    static ConcurrentHashMap<RecordKey, RecordValue> parseHosts(InputStream stream) throws IOException {
+        ConcurrentHashMap<RecordKey, RecordValue> recordStore = new ConcurrentHashMap<RecordKey, RecordValue>();
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
         String line;
         while((line = reader.readLine()) != null) {

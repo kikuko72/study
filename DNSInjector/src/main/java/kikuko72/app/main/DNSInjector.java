@@ -1,23 +1,18 @@
 package kikuko72.app.main;
 
 import kikuko72.app.logic.util.BytesTranslator;
-import kikuko72.app.logic.util.HostsReader;
 import kikuko72.app.model.message.DNSMessage;
 import kikuko72.app.model.record.ResourceRecord;
 import kikuko72.app.model.record.identifier.RecordKey;
-import kikuko72.app.model.record.value.RecordValue;
-import kikuko72.app.service.*;
+import kikuko72.app.service.DNS;
+import kikuko72.app.service.Resolver;
+import kikuko72.app.service.ResolverImpl;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.SocketAddress;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class DNSInjector {
@@ -32,23 +27,8 @@ public class DNSInjector {
 	public static void main(String[] args) throws IOException {
         // 委譲するDNSサーバーを指定
         String delegateHost = System.getProperty(DELEGATE_HOST_KEY);
-        InetAddress delegateHostAddress = InetAddress.getByName(delegateHost);
-        Delegate delegate = new DelegateImpl(delegateHostAddress.getAddress());
-        Map<RecordKey, RecordValue> recordStore;
         String hostsFilePath = System.getProperty(HOSTS_PATH_KEY);
-        try {
-            if (hostsFilePath != null) {
-                File hosts = new File(hostsFilePath);
-                recordStore = HostsReader.parseHosts(hosts.toURI().toURL().openStream());
-            } else {
-                recordStore = new HashMap<RecordKey, RecordValue>();
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            recordStore = new HashMap<RecordKey, RecordValue>();
-        }
-        resolver = new ResolverImpl(delegate, recordStore);
+        resolver = new ResolverImpl(delegateHost, hostsFilePath);
 
 		while (true) {
             serve();

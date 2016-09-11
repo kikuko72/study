@@ -15,6 +15,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by User on 2016/09/05.
@@ -46,8 +47,8 @@ public class ResolverImplTest {
         RecordKey hogeIpv4 = new RecordKey("hoge.", Type.A, Class.INTERNET);
         Inet4Address localhost = (Inet4Address)InetAddress.getByAddress(new byte[]{127, 0, 0, 1});
         RecordValue localhostData = new RecordValue(DNSInjector.DEFAULT_TTL, localhost);
-        Map<RecordKey, RecordValue> recordStore = new HashMap<RecordKey, RecordValue>();
-        Resolver resolver = new ResolverImpl(createMockDelegate(hogeIpv4, localhostData), recordStore);
+        RecordStore recordStore = new RecordStore(new ConcurrentHashMap<RecordKey, RecordValue>());
+        Resolver resolver = new ResolverImpl(createMockDelegate(hogeIpv4, localhostData), new Injector(recordStore));
 
         DNSMessage actual1 = resolver.resolve(queryMessage);
         DNSMessage actual2 = resolver.resolve(queryMessage);
@@ -64,9 +65,9 @@ public class ResolverImplTest {
     }
 
     private Delegate createMockDelegate(RecordKey hogeIpv4, RecordValue localhostData) {
-        final Map<RecordKey, RecordValue> recordStore = new HashMap<RecordKey, RecordValue>();
+        final ConcurrentHashMap<RecordKey, RecordValue> recordStore = new ConcurrentHashMap<RecordKey, RecordValue>();
         recordStore.put(hogeIpv4, localhostData);
-        final Injector injector = new Injector(recordStore);
+        final Injector injector = new Injector(new RecordStore(recordStore));
         return new Delegate() {
             boolean isFirst = true;
             @Override

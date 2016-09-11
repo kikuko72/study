@@ -10,7 +10,7 @@ import kikuko72.app.logic.util.BytesTranslator;
 import kikuko72.app.model.message.DNSMessage;
 
 
-public class DelegateImpl implements Delegate {
+class DelegateImpl implements Delegate {
 	private InetAddress nextDns;
 
 	public DelegateImpl(byte[] ipAddress) throws UnknownHostException {

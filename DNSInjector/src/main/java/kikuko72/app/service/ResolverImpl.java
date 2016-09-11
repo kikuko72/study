@@ -1,11 +1,9 @@
 package kikuko72.app.service;
 
 import kikuko72.app.model.message.DNSMessage;
-import kikuko72.app.model.record.value.RecordValue;
-import kikuko72.app.model.record.identifier.RecordKey;
 
 import java.io.IOException;
-import java.util.Map;
+import java.net.InetAddress;
 
 /**
  * Created by User on 2016/09/05.
@@ -14,9 +12,15 @@ public class ResolverImpl implements Resolver {
     private Delegate delegate;
     private Injector injector;
 
-    public ResolverImpl(Delegate delegate, Map<RecordKey, RecordValue> recordStore) {
+    public ResolverImpl(String delegateHost, String hostsFilePath) throws IOException {
+        InetAddress delegateHostAddress = InetAddress.getByName(delegateHost);
+        this.delegate = new DelegateImpl(delegateHostAddress.getAddress());
+        this.injector = new Injector(new RecordStore(hostsFilePath));
+    }
+
+    ResolverImpl(Delegate delegate, Injector injector) {
         this.delegate = delegate;
-        this.injector = new Injector(recordStore);
+        this.injector = injector;
     }
 
     public DNSMessage resolve(DNSMessage request) throws IOException {
@@ -26,7 +30,7 @@ public class ResolverImpl implements Resolver {
         }
 
         response = delegate.resolve(request);
-        // FIXME 現状マルチスレッドを考慮していない、DNSラウンドロビンを無効化してしまうなどの問題がある
+        // FIXME 現状DNSラウンドロビンを無効化してしまう問題がある
         injector.cache(response.getAllResourceRecords());
         return response;
 

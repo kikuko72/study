@@ -1,10 +1,11 @@
-package kikuko72.app.logic.util;
+package kikuko72.app.service;
 
 import kikuko72.app.model.record.identifier.Class;
 import kikuko72.app.model.record.identifier.RecordKey;
 import kikuko72.app.model.record.identifier.Type;
 import kikuko72.app.model.record.identifier.name.RecordName;
 import kikuko72.app.model.record.value.RecordValue;
+import kikuko72.app.service.HostsReader;
 import org.junit.Assert;
 import org.junit.Test;
 

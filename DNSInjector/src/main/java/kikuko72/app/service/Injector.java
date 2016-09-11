@@ -12,14 +12,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 
 class Injector implements  Resolver{
 
-    private Map<RecordKey, RecordValue> recordStore;
+    private RecordStore recordStore;
 
-    Injector(Map<RecordKey, RecordValue> recordStore) {
+    Injector(RecordStore recordStore) {
         this.recordStore = recordStore;
     }
 
@@ -48,11 +47,6 @@ class Injector implements  Resolver{
 	}
 
     void cache(List<ResourceRecord> records) {
-        if (records.size() == 0) {
-            return;
-        }
-        for(ResourceRecord record : records) {
-            recordStore.put(record.getRecordKey(), record.getRecordValue());
-        }
+        recordStore.cache(records);
     }
 }

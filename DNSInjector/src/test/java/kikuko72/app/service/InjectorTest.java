@@ -14,6 +14,7 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.Assert.*;
 
@@ -37,12 +38,12 @@ public class InjectorTest {
         };
         DNSMessage queryMessage = DNSMessage.scan(input);
 
-        Map<RecordKey, RecordValue> recordStore = new HashMap<RecordKey, RecordValue>();
+        ConcurrentHashMap<RecordKey, RecordValue> recordStore = new ConcurrentHashMap<RecordKey, RecordValue>();
         RecordKey hogeIpv4 = new RecordKey("hoge.", Type.A, Class.INTERNET);
         Inet4Address localhost = (Inet4Address)InetAddress.getByAddress(new byte[]{127, 0, 0, 1});
         RecordValue localhostData = new RecordValue(DNSInjector.DEFAULT_TTL, localhost);
         recordStore.put(hogeIpv4, localhostData);
-        Resolver injector = new Injector(recordStore);
+        Resolver injector = new Injector(new RecordStore(recordStore));
         DNSMessage actual = injector.resolve(queryMessage);
         byte[] expectedBytes = new byte[]{
                 (byte)0xff, (byte)0xff, // ID
@@ -80,7 +81,7 @@ public class InjectorTest {
         };
         DNSMessage queryMessage = DNSMessage.scan(input);
 
-        Map<RecordKey, RecordValue> recordStore = new HashMap<RecordKey, RecordValue>();
+        ConcurrentHashMap<RecordKey, RecordValue> recordStore = new ConcurrentHashMap<RecordKey, RecordValue>();
         RecordKey fooIpv4 = new RecordKey("foo.jp.", Type.A, Class.INTERNET);
         Inet4Address localhost = (Inet4Address)InetAddress.getByAddress(new byte[]{127, 0, 0, 1});
         RecordValue localhostData = new RecordValue(DNSInjector.DEFAULT_TTL, localhost);
@@ -90,7 +91,7 @@ public class InjectorTest {
         RecordValue fooValue = new RecordValue(DNSInjector.DEFAULT_TTL, new RecordName("foo.jp."));
         recordStore.put(barKey, fooValue);
 
-        Resolver injector = new Injector(recordStore);
+        Resolver injector = new Injector(new RecordStore(recordStore));
         DNSMessage actual = injector.resolve(queryMessage);
         byte[] expectedBytes = new byte[]{
                 (byte)0xff, (byte)0xff, // ID
