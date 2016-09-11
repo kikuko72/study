@@ -2,11 +2,11 @@ package kikuko72.app.service;
 
 import kikuko72.app.model.message.DNSMessage;
 import kikuko72.app.model.message.ResponseRecords;
-import kikuko72.app.model.record.identifier.Class;
-import kikuko72.app.model.record.value.RecordValue;
 import kikuko72.app.model.record.ResourceRecord;
+import kikuko72.app.model.record.identifier.Class;
 import kikuko72.app.model.record.identifier.RecordKey;
 import kikuko72.app.model.record.identifier.Type;
+import kikuko72.app.model.record.value.RecordValue;
 
 import java.io.IOException;
 import java.util.ArrayList;
